@@ -21,3 +21,4 @@ D:\HoNgocQuyen_2124110090\ST\ST-FE\obj\Debug\net8.0-windows\refint\ST-FE.dll
 D:\HoNgocQuyen_2124110090\ST\ST-FE\obj\Debug\net8.0-windows\ST-FE.pdb
 D:\HoNgocQuyen_2124110090\ST\ST-FE\obj\Debug\net8.0-windows\ST-FE.genruntimeconfig.cache
 D:\HoNgocQuyen_2124110090\ST\ST-FE\obj\Debug\net8.0-windows\ref\ST-FE.dll
+D:\HoNgocQuyen_2124110090\ST\ST-FE\obj\Debug\net8.0-windows\ST-FE.sourcelink.json

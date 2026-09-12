@@ -61,6 +61,7 @@ namespace ST_FE
             dgvCategories.Name = "dgvCategories";
             dgvCategories.Size = new Size(835, 492);
             dgvCategories.TabIndex = 0;
+            dgvCategories.CellContentClick += dgvCategories_CellClick;
             // 
             // btnSearch
             // 
@@ -213,7 +214,6 @@ namespace ST_FE
             Controls.Add(btndelete);
             Controls.Add(btnupdate);
             Controls.Add(btnadd);
-
             Name = "FormCategoryManagement";
             Load += FormCategoryManagement_Load;
             ((ISupportInitialize)dgvCategories).EndInit();

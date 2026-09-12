@@ -33,3 +33,4 @@ D:\HoNgocQuyen_2124110090\ST\ST-BE\obj\Debug\net8.0\refint\ST-BE.dll
 D:\HoNgocQuyen_2124110090\ST\ST-BE\obj\Debug\net8.0\ST-BE.pdb
 D:\HoNgocQuyen_2124110090\ST\ST-BE\obj\Debug\net8.0\ST-BE.genruntimeconfig.cache
 D:\HoNgocQuyen_2124110090\ST\ST-BE\obj\Debug\net8.0\ref\ST-BE.dll
+D:\HoNgocQuyen_2124110090\ST\ST-BE\obj\Debug\net8.0\ST-BE.sourcelink.json
