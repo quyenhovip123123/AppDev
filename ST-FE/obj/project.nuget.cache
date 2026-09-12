@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "z8uuwZUIThE=",
+  "success": true,
+  "projectFilePath": "D:\\HoNgocQuyen_2124110090\\ST\\ST-FE\\ST-FE.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\system.io.pipelines\\10.0.12\\system.io.pipelines.10.0.12.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.net.http.json\\10.0.12\\system.net.http.json.10.0.12.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.text.encodings.web\\10.0.12\\system.text.encodings.web.10.0.12.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.text.json\\10.0.12\\system.text.json.10.0.12.nupkg.sha512"
+  ],
+  "logs": []
+}
