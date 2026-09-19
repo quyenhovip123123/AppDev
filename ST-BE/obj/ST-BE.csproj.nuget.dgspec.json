@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\HoNgocQuyen_2124110090\\ST\\ST-BE\\ST-BE.csproj": {}
+    "D:\\AppDev\\ST-BE\\ST-BE.csproj": {}
   },
   "projects": {
-    "D:\\HoNgocQuyen_2124110090\\ST\\ST-BE\\ST-BE.csproj": {
+    "D:\\AppDev\\ST-BE\\ST-BE.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\HoNgocQuyen_2124110090\\ST\\ST-BE\\ST-BE.csproj",
+        "projectUniqueName": "D:\\AppDev\\ST-BE\\ST-BE.csproj",
         "projectName": "ST-BE",
-        "projectPath": "D:\\HoNgocQuyen_2124110090\\ST\\ST-BE\\ST-BE.csproj",
+        "projectPath": "D:\\AppDev\\ST-BE\\ST-BE.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\HoNgocQuyen_2124110090\\ST\\ST-BE\\obj\\",
+        "outputPath": "D:\\AppDev\\ST-BE\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -53,6 +53,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[10.2.3, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.23.0, )"
             }
           },
           "imports": [

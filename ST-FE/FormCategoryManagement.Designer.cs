@@ -61,7 +61,7 @@ namespace ST_FE
             dgvCategories.Name = "dgvCategories";
             dgvCategories.Size = new Size(835, 492);
             dgvCategories.TabIndex = 0;
-            dgvCategories.CellContentClick += dgvCategories_CellClick;
+            dgvCategories.CellClick += dgvCategories_CellClick;
             // 
             // btnSearch
             // 

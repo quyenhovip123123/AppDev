@@ -1,5 +1,21 @@
 [
   {
+    "ContainingType": "ST_BE.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "ST_BE.Controllers.LoginRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "ST_BE.Controllers.CategoriesController",
     "Method": "GetAll",
     "RelativePath": "api/Categories",
