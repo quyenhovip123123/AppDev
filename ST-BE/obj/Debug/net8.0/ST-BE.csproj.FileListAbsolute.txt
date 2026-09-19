@@ -77,3 +77,6 @@ D:\AppDev\ST-BE\obj\Debug\net8.0\refint\ST-BE.dll
 D:\AppDev\ST-BE\obj\Debug\net8.0\ST-BE.pdb
 D:\AppDev\ST-BE\obj\Debug\net8.0\ST-BE.genruntimeconfig.cache
 D:\AppDev\ST-BE\obj\Debug\net8.0\ref\ST-BE.dll
+D:\AppDev\ST-BE\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\AppDev\ST-BE\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+D:\AppDev\ST-BE\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll

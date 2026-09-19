@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "c8i65bpVmPY=",
+  "dgSpecHash": "imK9oogVfwA=",
   "success": true,
   "projectFilePath": "D:\\AppDev\\ST-BE\\ST-BE.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.31\\microsoft.aspnetcore.authentication.jwtbearer.8.0.31.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.bcl.cryptography\\10.0.2\\microsoft.bcl.cryptography.10.0.2.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.apidescription.server\\8.0.0\\microsoft.extensions.apidescription.server.8.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
@@ -11,6 +12,8 @@
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.23.0\\microsoft.identitymodel.abstractions.8.23.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.23.0\\microsoft.identitymodel.jsonwebtokens.8.23.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.logging\\8.23.0\\microsoft.identitymodel.logging.8.23.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.protocols\\7.7.3\\microsoft.identitymodel.protocols.7.7.3.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\7.7.3\\microsoft.identitymodel.protocols.openidconnect.7.7.3.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.23.0\\microsoft.identitymodel.tokens.8.23.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.openapi\\2.7.5\\microsoft.openapi.2.7.5.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\swashbuckle.aspnetcore\\10.2.3\\swashbuckle.aspnetcore.10.2.3.nupkg.sha512",

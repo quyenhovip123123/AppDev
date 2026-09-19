@@ -1,22 +1,39 @@
-﻿using System;
+﻿using ST_FE.WinForms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net.Http.Json;
 
 namespace ST_FE
 {
     public partial class FormCategoryManagement : Form
     {
-        private static readonly HttpClient _client = new HttpClient
+        //private static readonly HttpClient _client = new HttpClient
+        //{
+        //    BaseAddress = new Uri("https://localhost:7123/api/")
+        //};
+        private HttpClient GetAuthenticatedClient()
         {
-            BaseAddress = new Uri("https://localhost:7123/api/")
-        };
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:7123/api/")
+            };
+
+            // Đính kèm Token vào Header theo chuẩn Bearer Authentication
+            if (!string.IsNullOrEmpty(SessionManager.JwtToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", SessionManager.JwtToken);
+            }
+            return client;
+        }
+
         public FormCategoryManagement()
         {
             InitializeComponent();
@@ -31,13 +48,13 @@ namespace ST_FE
         {
             try
             {
-                // Gửi request GET tới endpoint "categories", tự động giải tuần tự hóa chuỗi JSON thành List<CategoryDto>
-                var categories = await _client.GetFromJsonAsync<List<CategoryDto>>("categories");
-                dgvCategories.DataSource = categories; // Gán nguồn dữ liệu cho bảng hiển thị
+                using var client = GetAuthenticatedClient(); // Sử dụng client đã gắn token
+                var categories = await client.GetFromJsonAsync<List<CategoryDto>>("categories");
+                dgvCategories.DataSource = categories;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi kết nối Server: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi quyền truy cập hoặc mất kết nối: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -69,7 +86,7 @@ namespace ST_FE
             };
 
             // Gửi request POST kèm theo đối tượng dạng JSON
-            var response = await _client.PostAsJsonAsync("categories", newCat);
+            var response = await GetAuthenticatedClient().PostAsJsonAsync("categories", newCat);
             if (response.IsSuccessStatusCode)
             {
                 MessageBox.Show("Thêm mới thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -100,7 +117,7 @@ namespace ST_FE
             };
 
             // Gửi request PUT kèm ID trên đường dẫn URI
-            var response = await _client.PutAsJsonAsync($"categories/{id}", updateCat);
+            var response = await GetAuthenticatedClient().PutAsJsonAsync($"categories/{id}", updateCat);
             if (response.IsSuccessStatusCode)
             {
                 MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -126,7 +143,7 @@ namespace ST_FE
             var confirm = MessageBox.Show($"Bạn có chắc muốn xóa nhóm hàng ID = {id}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm == DialogResult.Yes)
             {
-                var response = await _client.DeleteAsync($"categories/{id}");
+                var response = await GetAuthenticatedClient().DeleteAsync($"categories/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -153,7 +170,7 @@ namespace ST_FE
             try
             {
                 // Gọi API dạng: GET /api/categories/search?keyword=abc
-                var result = await _client.GetFromJsonAsync<List<CategoryDto>>($"categories/search?keyword={keyword}");
+                var result = await GetAuthenticatedClient().GetFromJsonAsync<List<CategoryDto>>($"categories/search?keyword={keyword}");
                 dgvCategories.DataSource = result;
             }
             catch (Exception)

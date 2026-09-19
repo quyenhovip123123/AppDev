@@ -96,6 +96,16 @@
   },
   {
     "ContainingType": "ST_BE.Controllers.CategoriesController",
+    "Method": "GetAdminDashboard",
+    "RelativePath": "api/Categories/admin-dashboard",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ST_BE.Controllers.CategoriesController",
     "Method": "Search",
     "RelativePath": "api/Categories/search",
     "HttpMethod": "GET",
@@ -108,6 +118,16 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ST_BE.Controllers.CategoriesController",
+    "Method": "GetStaffPos",
+    "RelativePath": "api/Categories/staff-pos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
