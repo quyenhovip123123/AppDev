@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ST_BE.Data;
 using ST_BE.Models;
+using System.Threading.Tasks;
 
 namespace ST_BE.Controllers
 {
@@ -7,82 +10,80 @@ namespace ST_BE.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-
-        private static readonly List<Category> _categories = new() {
-            new Category { CategoryId = 1, CategoryName = "Bánh kẹo & Đồ ăn vặt", Description = "Snack, bánh quy, kẹo dẻo" },
-            new Category { CategoryId = 2, CategoryName = "Nước giải khát & Trà", Description = "Nước ngọt, nước khoáng, trà" },
-            new Category { CategoryId = 3, CategoryName = "Sữa & Sản phẩm từ sữa", Description = "Sữa tươi, sữa chua, phô mai" },
-            new Category { CategoryId = 4, CategoryName = "Mì gói & Thực phẩm ăn liền", Description = "Mì ăn liền, phở khô, cháo gói" },
-            new Category { CategoryId = 5, CategoryName = "Gia vị & Dầu ăn", Description = "Nước mắm, hạt nêm, dầu thực vật" }
-        };
-
-        [HttpGet]
-        public IActionResult GetAll()
+        private readonly DBContext dbContext;
+        public CategoriesController(DBContext context)
         {
-            return Ok(_categories);
+            dbContext = context;
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await dbContext.Categories.AsNoTracking().ToListAsync());
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var cat = _categories.FirstOrDefault(c => c.CategoryId == id);
-            if (cat == null)
+            var category = await dbContext.Categories.FindAsync(id);
+            if (category == null)
             {
-                return NotFound(new { message = "Không tìm thấy nhóm hàng!" });
+                return NotFound(new { message = "Không tìm thấy nhóm hàng trong CSDL!" });
             }
-            return Ok(cat);
+            return Ok(category);
         }
-
         [HttpGet("search")]
-        public IActionResult Search([FromQuery] string keyword)
+        public async Task<IActionResult> Search([FromQuery] string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                return BadRequest(new { message = "Vui lòng nhập từ khóa!" });
+                return BadRequest(new { message = "Vui lòng nhập từ khóa tìm kiếm!" });
             }
-            var result = _categories
-                .Where(c => c.CategoryName.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var result = await dbContext.Categories
+                .Where(c => c.CategoryName.Contains(keyword))
+                .ToListAsync();
             return Ok(result);
         }
-
         [HttpPost]
-        public IActionResult Create([FromBody] Category newCat)
+        public async Task<IActionResult> Create([FromBody] Category newCat)
         {
-            if (string.IsNullOrWhiteSpace(newCat.CategoryName))
+            if (!ModelState.IsValid)
             {
-                return BadRequest(new { message = "Tên không được trống!" });
+                return BadRequest(ModelState);
             }
-            newCat.CategoryId = _categories.Count > 0 ? _categories.Max(c => c.CategoryId) + 1 : 1;
-            _categories.Add(newCat);
+
+            dbContext.Categories.Add(newCat);
+            await dbContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetById), new { id = newCat.CategoryId }, newCat);
         }
-
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Category updateCat)
+        public async Task<IActionResult> Update(int id, [FromBody] Category updateCat)
         {
-            var cat = _categories.FirstOrDefault(c => c.CategoryId == id);
+            var cat = await dbContext.Categories.FindAsync(id);
             if (cat == null)
             {
                 return NotFound(new { message = "Không tìm thấy nhóm hàng cần sửa!" });
             }
+
             cat.CategoryName = updateCat.CategoryName;
             cat.Description = updateCat.Description;
 
+            await dbContext.SaveChangesAsync();
             return NoContent();
         }
-
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var cat = _categories.FirstOrDefault(c => c.CategoryId == id);
+            var cat = await dbContext.Categories.FindAsync(id);
             if (cat == null)
             {
                 return NotFound(new { message = "Không tìm thấy nhóm hàng cần xóa!" });
             }
-            _categories.Remove(cat);
+
+            dbContext.Categories.Remove(cat);
+            await dbContext.SaveChangesAsync();
             return NoContent();
         }
+
     }
 }

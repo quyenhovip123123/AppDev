@@ -225,6 +225,9 @@
   "components": {
     "schemas": {
       "Category": {
+        "required": [
+          "categoryName"
+        ],
         "type": "object",
         "properties": {
           "categoryId": {
@@ -232,8 +235,9 @@
             "format": "int32"
           },
           "categoryName": {
-            "type": "string",
-            "nullable": true
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
           },
           "description": {
             "type": "string",
