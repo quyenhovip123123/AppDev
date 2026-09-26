@@ -16,6 +16,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="FormCustomerManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="FormCustomerManagement.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="FormCategoryManagement.resx">
       <Generator></Generator>
     </EmbeddedResource>

@@ -24,7 +24,7 @@
         "runtime": {
           "lib/net8.0/Microsoft.Bcl.Cryptography.dll": {
             "assemblyVersion": "10.0.0.2",
-            "fileVersion": "0.0.0.0"
+            "fileVersion": "10.0.225.61305"
           }
         }
       },
@@ -42,7 +42,8 @@
         },
         "runtime": {
           "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
-            "fileVersion": "0.0.0.0"
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
           }
         }
       },
@@ -108,7 +109,7 @@
         "runtime": {
           "lib/net8.0/Microsoft.IdentityModel.Tokens.dll": {
             "assemblyVersion": "8.23.0.0",
-            "fileVersion": "8.23.0.26257"
+            "fileVersion": "0.0.0.0"
           }
         }
       },
@@ -127,7 +128,8 @@
         },
         "runtime": {
           "lib/net8.0/System.IdentityModel.Tokens.Jwt.dll": {
-            "fileVersion": "0.0.0.0"
+            "assemblyVersion": "8.23.0.0",
+            "fileVersion": "8.23.0.26257"
           }
         }
       },
@@ -153,8 +155,7 @@
       "System.Text.Encodings.Web/10.0.12": {
         "runtime": {
           "lib/net8.0/System.Text.Encodings.Web.dll": {
-            "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.1226.42308"
+            "fileVersion": "0.0.0.0"
           }
         },
         "runtimeTargets": {
