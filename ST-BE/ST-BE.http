@@ -1,6 +1,19 @@
-@ST_BE_HostAddress = http://localhost:5124
+@host = http://localhost:5124
+@token = paste-access-token-here
 
-GET {{ST_BE_HostAddress}}/weatherforecast/
-Accept: application/json
+### Đăng nhập (lấy accessToken + refreshToken)
+POST {{host}}/api/auth/login
+Content-Type: application/json
 
-###
+{ "username": "admin", "password": "admin123" }
+
+### Thông tin tài khoản hiện tại
+GET {{host}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Danh sách sản phẩm
+GET {{host}}/api/products
+Authorization: Bearer {{token}}
+
+### Gọi API không có token -> 401
+GET {{host}}/api/products
