@@ -49,7 +49,7 @@ namespace ST_FE
             try
             {
                 using var client = GetAuthenticatedClient();
-                var customer = await client.GetFromJsonAsync<List<CustomerDto>>("customer");
+                var customer = await client.GetFromJsonAsync<List<CustomerDto>>("customers");
                 dgvCustomer.DataSource = customer;
             }
             catch (Exception ex)
@@ -70,8 +70,8 @@ namespace ST_FE
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvCustomer.Rows[e.RowIndex];
-                txtCustomerId.Text = row.Cells["CategoryId"].Value.ToString();
-                txtCustomerName.Text = row.Cells["CategoryName"].Value.ToString();
+                txtCustomerId.Text = row.Cells["CustomerId"].Value?.ToString() ?? string.Empty;
+                txtCustomerName.Text = row.Cells["CustomerName"].Value?.ToString() ?? string.Empty;
                 txt_Description.Text = row.Cells["PhoneNumber"]?.Value?.ToString() ?? string.Empty;
             }
         }
@@ -79,14 +79,14 @@ namespace ST_FE
         // Nút THÊM MỚI (CREATE): Gửi dữ liệu POST lên Web API
         private async void btn_add_Click(object sender, EventArgs e)
         {
-            var newCat = new
+            var newCustomer = new
             {
-                CategoryName = txtCustomerName.Text,
-                Description = txt_Description.Text
+                CustomerName = txtCustomerName.Text.Trim(),
+                PhoneNumber = txt_Description.Text.Trim()
             };
 
             // Gửi request POST kèm theo đối tượng dạng JSON
-            var response = await GetAuthenticatedClient().PostAsJsonAsync("customer", newCat);
+            var response = await GetAuthenticatedClient().PostAsJsonAsync("customers", newCustomer);
             if (response.IsSuccessStatusCode)
             {
                 MessageBox.Show("Thêm mới thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -104,20 +104,25 @@ namespace ST_FE
         {
             if (string.IsNullOrEmpty(txtCustomerId.Text))
             {
-                MessageBox.Show("Vui lòng chọn nhóm hàng cần sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn khách hàng cần sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             int id = int.Parse(txtCustomerId.Text);
-            var updateCat = new
+            // Giữ nguyên các trường không có trên form (Address, RewardPoints, MembershipRank)
+            var current = (dgvCustomer.DataSource as List<CustomerDto>)?.FirstOrDefault(c => c.CustomerId == id);
+            var updateCustomer = new
             {
-                CategoryId = id,
-                CategoryName = txtCustomerName.Text,
-                Description = txt_Description.Text
+                CustomerId = id,
+                CustomerName = txtCustomerName.Text.Trim(),
+                PhoneNumber = txt_Description.Text.Trim(),
+                Address = current?.Address,
+                RewardPoints = current?.RewardPoints ?? 0,
+                MembershipRank = current?.MembershipRank ?? "Chuẩn"
             };
 
             // Gửi request PUT kèm ID trên đường dẫn URI
-            var response = await GetAuthenticatedClient().PutAsJsonAsync($"customer/{id}", updateCat);
+            var response = await GetAuthenticatedClient().PutAsJsonAsync($"customers/{id}", updateCustomer);
             if (response.IsSuccessStatusCode)
             {
                 MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -135,15 +140,15 @@ namespace ST_FE
         {
             if (string.IsNullOrEmpty(txtCustomerId.Text))
             {
-                MessageBox.Show("Vui lòng chọn nhóm hàng cần xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn khách hàng cần xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             int id = int.Parse(txtCustomerId.Text);
-            var confirm = MessageBox.Show($"Bạn có chắc muốn xóa nhóm hàng ID = {id}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var confirm = MessageBox.Show($"Bạn có chắc muốn xóa khách hàng ID = {id}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm == DialogResult.Yes)
             {
-                var response = await GetAuthenticatedClient().DeleteAsync($"customer/{id}");
+                var response = await GetAuthenticatedClient().DeleteAsync($"customers/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -169,8 +174,8 @@ namespace ST_FE
 
             try
             {
-                // Gọi API dạng: GET /api/customer/search?keyword=abc
-                var result = await GetAuthenticatedClient().GetFromJsonAsync<List<CustomerDto>>($"customer/search?keyword={keyword}");
+                // Gọi API dạng: GET /api/customers/search?keyword=abc
+                var result = await GetAuthenticatedClient().GetFromJsonAsync<List<CustomerDto>>($"customers/search?keyword={Uri.EscapeDataString(keyword)}");
                 dgvCustomer.DataSource = result;
             }
             catch (Exception)
@@ -192,6 +197,9 @@ namespace ST_FE
     {
         public int CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
-        public string PhoneNumber { get; set; } = string.Empty ;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string? Address { get; set; }
+        public int RewardPoints { get; set; }
+        public string MembershipRank { get; set; } = string.Empty;
     }
 }

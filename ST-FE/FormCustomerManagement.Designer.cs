@@ -166,7 +166,7 @@ namespace ST_FE
             gb2.Size = new Size(306, 244);
             gb2.TabIndex = 11;
             gb2.TabStop = false;
-            gb2.Text = "Thong tin nhom hang";
+            gb2.Text = "Thong tin khach hang";
             // 
             // l3
             // 
@@ -175,7 +175,7 @@ namespace ST_FE
             l3.Name = "l3";
             l3.Size = new Size(38, 15);
             l3.TabIndex = 11;
-            l3.Text = "Mo ta";
+            l3.Text = "So dien thoai";
             // 
             // l2
             // 
@@ -184,7 +184,7 @@ namespace ST_FE
             l2.Name = "l2";
             l2.Size = new Size(92, 15);
             l2.TabIndex = 10;
-            l2.Text = "Ten Nhom hang";
+            l2.Text = "Ten khach hang";
             // 
             // l1
             // 
@@ -203,7 +203,7 @@ namespace ST_FE
             gb3.Size = new Size(852, 514);
             gb3.TabIndex = 12;
             gb3.TabStop = false;
-            gb3.Text = "Danh sach nhom hang";
+            gb3.Text = "Danh sach khach hang";
             // 
             // FormCategoryManagement
             // 
