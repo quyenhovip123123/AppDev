@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ST_BE.Data;
 
@@ -10,9 +11,11 @@ using ST_BE.Data;
 namespace ST_BE.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20261003113135_v1")]
+    partial class v1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,7 +115,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 1,
-                            Address = "123 Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh",
                             CustomerName = "Nguyễn Văn A",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0901122334",
@@ -121,7 +123,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 2,
-                            Address = "45 Lê Lợi, Quận 1, TP. Hồ Chí Minh",
                             CustomerName = "Trần Thị B",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0918877665",
@@ -130,7 +131,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 3,
-                            Address = "78 Điện Biên Phủ, Bình Thạnh, TP. Hồ Chí Minh",
                             CustomerName = "Lê Văn C",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0983344556",
@@ -139,7 +139,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 4,
-                            Address = "56 Nguyễn Đình Chiểu, Quận 3, TP. Hồ Chí Minh",
                             CustomerName = "Phạm Thị D",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0905234167",
@@ -148,7 +147,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 5,
-                            Address = "89 Cách Mạng Tháng Tám, Quận 10, TP. Hồ Chí Minh",
                             CustomerName = "Hoàng Văn E",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0916342789",
@@ -157,7 +155,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 6,
-                            Address = "12 Phan Văn Trị, Gò Vấp, TP. Hồ Chí Minh",
                             CustomerName = "Võ Thị F",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0987456123",
@@ -166,7 +163,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 7,
-                            Address = "234 Phạm Văn Đồng, Thủ Đức, TP. Hồ Chí Minh",
                             CustomerName = "Đặng Văn G",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0908765432",
@@ -175,7 +171,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 8,
-                            Address = "67 Hoàng Văn Thụ, Tân Bình, TP. Hồ Chí Minh",
                             CustomerName = "Bùi Thị H",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0912345678",
@@ -184,7 +179,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 9,
-                            Address = "145 Nguyễn Văn Cừ, Quận 5, TP. Hồ Chí Minh",
                             CustomerName = "Đỗ Văn I",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0987654321",
@@ -193,7 +187,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 10,
-                            Address = "90 Võ Văn Tần, Quận 3, TP. Hồ Chí Minh",
                             CustomerName = "Ngô Thị K",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0903456789",
@@ -202,7 +195,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 11,
-                            Address = "34 Lũy Bán Bích, Tân Phú, TP. Hồ Chí Minh",
                             CustomerName = "Phan Văn L",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0914567890",
@@ -211,7 +203,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 12,
-                            Address = "76 Nguyễn Oanh, Gò Vấp, TP. Hồ Chí Minh",
                             CustomerName = "Huỳnh Thị M",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0981234567",
@@ -220,7 +211,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 13,
-                            Address = "156 Nguyễn Hữu Thọ, Quận 7, TP. Hồ Chí Minh",
                             CustomerName = "Trương Văn N",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0909876543",
@@ -229,7 +219,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 14,
-                            Address = "48 Xô Viết Nghệ Tĩnh, Bình Thạnh, TP. Hồ Chí Minh",
                             CustomerName = "Lý Thị O",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0917654321",
@@ -238,7 +227,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 15,
-                            Address = "201 Trường Chinh, Tân Bình, TP. Hồ Chí Minh",
                             CustomerName = "Mai Văn P",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0984561230",
@@ -247,7 +235,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 16,
-                            Address = "25 Nguyễn Thị Minh Khai, Quận 1, TP. Hồ Chí Minh",
                             CustomerName = "Nguyễn Thị Q",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0901234567",
@@ -256,7 +243,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 17,
-                            Address = "63 Âu Cơ, Tân Phú, TP. Hồ Chí Minh",
                             CustomerName = "Trần Văn R",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0912348901",
@@ -265,7 +251,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 18,
-                            Address = "112 Nguyễn Kiệm, Phú Nhuận, TP. Hồ Chí Minh",
                             CustomerName = "Lê Thị S",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0983456781",
@@ -274,7 +259,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 19,
-                            Address = "87 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh",
                             CustomerName = "Phạm Văn T",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0904567891",
@@ -283,7 +267,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 20,
-                            Address = "42 Lê Văn Sỹ, Quận 3, TP. Hồ Chí Minh",
                             CustomerName = "Hoàng Thị U",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0915678902",
@@ -292,7 +275,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 21,
-                            Address = "19 Tô Ngọc Vân, Thủ Đức, TP. Hồ Chí Minh",
                             CustomerName = "Võ Văn V",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0986789012",
@@ -301,7 +283,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 22,
-                            Address = "88 Nguyễn Thái Học, Quận 1, TP. Hồ Chí Minh",
                             CustomerName = "Đặng Thị X",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0907890123",
@@ -310,7 +291,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 23,
-                            Address = "135 Quang Trung, Gò Vấp, TP. Hồ Chí Minh",
                             CustomerName = "Bùi Văn Y",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0918901234",
@@ -319,7 +299,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 24,
-                            Address = "29 Hồng Bàng, Quận 5, TP. Hồ Chí Minh",
                             CustomerName = "Đỗ Thị Z",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0989012345",
@@ -328,7 +307,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 25,
-                            Address = "74 Pasteur, Quận 1, TP. Hồ Chí Minh",
                             CustomerName = "Nguyễn Văn Hùng",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0902345678",
@@ -337,7 +315,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 26,
-                            Address = "158 Lê Văn Việt, Thủ Đức, TP. Hồ Chí Minh",
                             CustomerName = "Trần Thị Lan",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0913456789",
@@ -346,7 +323,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 27,
-                            Address = "91 Nguyễn Trãi, Quận 5, TP. Hồ Chí Minh",
                             CustomerName = "Lê Văn Minh",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0984567891",
@@ -355,7 +331,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 28,
-                            Address = "36 Phan Đình Phùng, Phú Nhuận, TP. Hồ Chí Minh",
                             CustomerName = "Phạm Thị Hoa",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0905678901",
@@ -364,7 +339,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 29,
-                            Address = "205 Kinh Dương Vương, Bình Tân, TP. Hồ Chí Minh",
                             CustomerName = "Hoàng Văn Nam",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0916789012",
@@ -373,7 +347,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 30,
-                            Address = "64 Nguyễn Sơn, Tân Phú, TP. Hồ Chí Minh",
                             CustomerName = "Võ Thị Mai",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0987890123",
@@ -382,7 +355,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 31,
-                            Address = "105 Hai Bà Trưng, Quận 1, TP. Hồ Chí Minh",
                             CustomerName = "Đặng Văn Sơn",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0908901234",
@@ -391,7 +363,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 32,
-                            Address = "73 Nguyễn Văn Đậu, Bình Thạnh, TP. Hồ Chí Minh",
                             CustomerName = "Bùi Thị Ngọc",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0919012345",
@@ -400,7 +371,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 33,
-                            Address = "48 Lạc Long Quân, Tân Bình, TP. Hồ Chí Minh",
                             CustomerName = "Đỗ Văn Thành",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0980123456",
@@ -409,7 +379,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 34,
-                            Address = "120 Nguyễn Đình Chiểu, Quận 3, TP. Hồ Chí Minh",
                             CustomerName = "Nguyễn Thị Hương",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0901237890",
@@ -418,7 +387,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 35,
-                            Address = "58 Lê Đức Thọ, Gò Vấp, TP. Hồ Chí Minh",
                             CustomerName = "Trần Văn Bình",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0912348902",
@@ -427,7 +395,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 36,
-                            Address = "93 Nguyễn Hữu Cảnh, Bình Thạnh, TP. Hồ Chí Minh",
                             CustomerName = "Lê Thị Thảo",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0983459012",
@@ -436,7 +403,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 37,
-                            Address = "167 Quốc lộ 13, Thủ Đức, TP. Hồ Chí Minh",
                             CustomerName = "Phạm Văn Long",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0904560123",
@@ -445,7 +411,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 38,
-                            Address = "25 Trần Huy Liệu, Phú Nhuận, TP. Hồ Chí Minh",
                             CustomerName = "Hoàng Thị Vân",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0915671234",
@@ -454,7 +419,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 39,
-                            Address = "82 Nguyễn Văn Quá, Quận 12, TP. Hồ Chí Minh",
                             CustomerName = "Võ Văn Đức",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0986782345",
@@ -463,7 +427,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 40,
-                            Address = "45 Nam Kỳ Khởi Nghĩa, Quận 3, TP. Hồ Chí Minh",
                             CustomerName = "Đặng Thị Nga",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0907893456",
@@ -472,7 +435,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 41,
-                            Address = "78 Nguyễn Thị Thập, Quận 7, TP. Hồ Chí Minh",
                             CustomerName = "Bùi Văn Phúc",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0918904567",
@@ -481,7 +443,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 42,
-                            Address = "16 Bình Long, Tân Phú, TP. Hồ Chí Minh",
                             CustomerName = "Đỗ Thị Yến",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0989015678",
@@ -490,7 +451,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 43,
-                            Address = "99 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh",
                             CustomerName = "Nguyễn Văn Khoa",
                             MembershipRank = "Vàng",
                             PhoneNumber = "0902346789",
@@ -499,7 +459,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 44,
-                            Address = "52 Nguyễn Văn Trỗi, Phú Nhuận, TP. Hồ Chí Minh",
                             CustomerName = "Trần Thị Nhung",
                             MembershipRank = "Bạc",
                             PhoneNumber = "0913457890",
@@ -508,7 +467,6 @@ namespace ST_BE.Migrations
                         new
                         {
                             CustomerId = 45,
-                            Address = "134 Lê Văn Quới, Bình Tân, TP. Hồ Chí Minh",
                             CustomerName = "Lê Văn Dũng",
                             MembershipRank = "Chuẩn",
                             PhoneNumber = "0984568901",

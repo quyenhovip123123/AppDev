@@ -73,6 +73,9 @@ namespace ST_FE
                 txtCustomerId.Text = row.Cells["CustomerId"].Value?.ToString() ?? string.Empty;
                 txtCustomerName.Text = row.Cells["CustomerName"].Value?.ToString() ?? string.Empty;
                 txt_Description.Text = row.Cells["PhoneNumber"]?.Value?.ToString() ?? string.Empty;
+                txtAddress.Text = row.Cells["Address"]?.Value?.ToString() ?? string.Empty;
+                txtRP.Value = Convert.ToDecimal(row.Cells["RewardPoints"]?.Value ?? 0);
+                txtMR.Text = row.Cells["MembershipRank"]?.Value?.ToString() ?? string.Empty;
             }
         }
 
@@ -116,9 +119,9 @@ namespace ST_FE
                 CustomerId = id,
                 CustomerName = txtCustomerName.Text.Trim(),
                 PhoneNumber = txt_Description.Text.Trim(),
-                Address = current?.Address,
-                RewardPoints = current?.RewardPoints ?? 0,
-                MembershipRank = current?.MembershipRank ?? "Chuẩn"
+                Address = txtAddress.Text.Trim(),
+                RewardPoints = (int)txtRP.Value,
+                MembershipRank = txtMR.Text.Trim() ?? "Chuẩn"
             };
 
             // Gửi request PUT kèm ID trên đường dẫn URI
@@ -190,6 +193,9 @@ namespace ST_FE
             txtCustomerId.Text = "";
             txtCustomerName.Text = "";
             txt_Description.Text = "";
+            txtAddress.Text = "";
+            txtRP.Value = 0;
+            txtMR.Text = "Chuan";
         }
     }
     // Lớp DTO trung gian tại Client hứng dữ liệu JSON trả về từ Server

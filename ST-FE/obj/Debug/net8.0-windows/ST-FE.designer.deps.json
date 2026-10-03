@@ -109,7 +109,7 @@
         "runtime": {
           "lib/net8.0/Microsoft.IdentityModel.Tokens.dll": {
             "assemblyVersion": "8.23.0.0",
-            "fileVersion": "0.0.0.0"
+            "fileVersion": "8.23.0.26257"
           }
         }
       },
@@ -155,7 +155,8 @@
       "System.Text.Encodings.Web/10.0.12": {
         "runtime": {
           "lib/net8.0/System.Text.Encodings.Web.dll": {
-            "fileVersion": "0.0.0.0"
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.1226.42308"
           }
         },
         "runtimeTargets": {

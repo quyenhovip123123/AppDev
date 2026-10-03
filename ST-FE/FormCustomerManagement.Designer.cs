@@ -44,14 +44,21 @@ namespace ST_FE
             btn_reload = new Button();
             gb1 = new GroupBox();
             gb2 = new GroupBox();
+            l6 = new Label();
+            txtMR = new TextBox();
+            l5 = new Label();
             l3 = new Label();
             l2 = new Label();
             l1 = new Label();
             gb3 = new GroupBox();
+            l4 = new Label();
+            txtAddress = new TextBox();
+            txtRP = new NumericUpDown();
             ((ISupportInitialize)dgvCustomer).BeginInit();
             gb1.SuspendLayout();
             gb2.SuspendLayout();
             gb3.SuspendLayout();
+            ((ISupportInitialize)txtRP).BeginInit();
             SuspendLayout();
             // 
             // dgvCustomer
@@ -75,7 +82,7 @@ namespace ST_FE
             // 
             // btn_add
             // 
-            btn_add.Location = new Point(882, 417);
+            btn_add.Location = new Point(890, 575);
             btn_add.Name = "btn_add";
             btn_add.Size = new Size(75, 39);
             btn_add.TabIndex = 2;
@@ -85,7 +92,7 @@ namespace ST_FE
             // 
             // btn_update
             // 
-            btn_update.Location = new Point(985, 417);
+            btn_update.Location = new Point(989, 577);
             btn_update.Name = "btn_update";
             btn_update.Size = new Size(89, 38);
             btn_update.TabIndex = 3;
@@ -95,7 +102,7 @@ namespace ST_FE
             // 
             // btn_delete
             // 
-            btn_delete.Location = new Point(1104, 416);
+            btn_delete.Location = new Point(1101, 575);
             btn_delete.Name = "btn_delete";
             btn_delete.Size = new Size(81, 40);
             btn_delete.TabIndex = 4;
@@ -155,6 +162,10 @@ namespace ST_FE
             // 
             // gb2
             // 
+            gb2.Controls.Add(txtRP);
+            gb2.Controls.Add(l6);
+            gb2.Controls.Add(txtMR);
+            gb2.Controls.Add(l5);
             gb2.Controls.Add(l3);
             gb2.Controls.Add(l2);
             gb2.Controls.Add(l1);
@@ -163,17 +174,42 @@ namespace ST_FE
             gb2.Controls.Add(txtCustomerId);
             gb2.Location = new Point(876, 147);
             gb2.Name = "gb2";
-            gb2.Size = new Size(306, 244);
+            gb2.Size = new Size(306, 404);
             gb2.TabIndex = 11;
             gb2.TabStop = false;
             gb2.Text = "Thong tin khach hang";
+            // 
+            // l6
+            // 
+            l6.AutoSize = true;
+            l6.Location = new Point(14, 341);
+            l6.Name = "l6";
+            l6.Size = new Size(78, 15);
+            l6.TabIndex = 17;
+            l6.Text = "MemberRank";
+            // 
+            // txtMR
+            // 
+            txtMR.Location = new Point(14, 359);
+            txtMR.Name = "txtMR";
+            txtMR.Size = new Size(279, 23);
+            txtMR.TabIndex = 16;
+            // 
+            // l5
+            // 
+            l5.AutoSize = true;
+            l5.Location = new Point(14, 282);
+            l5.Name = "l5";
+            l5.Size = new Size(77, 15);
+            l5.TabIndex = 15;
+            l5.Text = "Reward Point";
             // 
             // l3
             // 
             l3.AutoSize = true;
             l3.Location = new Point(11, 167);
             l3.Name = "l3";
-            l3.Size = new Size(38, 15);
+            l3.Size = new Size(76, 15);
             l3.TabIndex = 11;
             l3.Text = "So dien thoai";
             // 
@@ -182,7 +218,7 @@ namespace ST_FE
             l2.AutoSize = true;
             l2.Location = new Point(12, 98);
             l2.Name = "l2";
-            l2.Size = new Size(92, 15);
+            l2.Size = new Size(90, 15);
             l2.TabIndex = 10;
             l2.Text = "Ten khach hang";
             // 
@@ -205,10 +241,37 @@ namespace ST_FE
             gb3.TabStop = false;
             gb3.Text = "Danh sach khach hang";
             // 
-            // FormCategoryManagement
+            // l4
+            // 
+            l4.AutoSize = true;
+            l4.Location = new Point(890, 369);
+            l4.Name = "l4";
+            l4.Size = new Size(49, 15);
+            l4.TabIndex = 13;
+            l4.Text = "Address";
+            // 
+            // txtAddress
+            // 
+            txtAddress.Location = new Point(890, 387);
+            txtAddress.Name = "txtAddress";
+            txtAddress.Size = new Size(279, 23);
+            txtAddress.TabIndex = 12;
+            // 
+            // txtRP
+            // 
+            txtRP.Location = new Point(18, 300);
+            txtRP.Name = "txtRP";
+            txtRP.Size = new Size(275, 23);
+            txtRP.TabIndex = 18;
+            txtRP.Minimum = 0;
+            txtRP.Maximum = 99999999;
+            // 
+            // FormCustomerManagement
             // 
             ClientSize = new Size(1207, 627);
+            Controls.Add(l4);
             Controls.Add(gb3);
+            Controls.Add(txtAddress);
             Controls.Add(gb2);
             Controls.Add(gb1);
             Controls.Add(btn_delete);
@@ -222,7 +285,9 @@ namespace ST_FE
             gb2.ResumeLayout(false);
             gb2.PerformLayout();
             gb3.ResumeLayout(false);
+            ((ISupportInitialize)txtRP).EndInit();
             ResumeLayout(false);
+            PerformLayout();
 
         }
         private DataGridView dgvCustomer;
@@ -241,5 +306,11 @@ namespace ST_FE
         private Label l3;
         private Label l2;
         private GroupBox gb3;
+        private Label l4;
+        private TextBox txtAddress;
+        private Label l6;
+        private TextBox txtMR;
+        private Label l5;
+        private NumericUpDown txtRP;
     }
 }

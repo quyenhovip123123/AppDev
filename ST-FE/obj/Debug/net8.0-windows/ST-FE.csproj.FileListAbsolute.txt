@@ -58,3 +58,4 @@ D:\AppDev\ST-FE\obj\Debug\net8.0-windows\ST_FE.Login.resources
 D:\AppDev\ST-FE\bin\Debug\net8.0-windows\Microsoft.Bcl.Cryptography.dll
 D:\AppDev\ST-FE\bin\Debug\net8.0-windows\System.Formats.Asn1.dll
 D:\AppDev\ST-FE\obj\Debug\net8.0-windows\ST_FE.FormCustomerManagement.resources
+D:\AppDev\ST-FE\obj\Debug\net8.0-windows\ST_FE.FormMainShell.resources
