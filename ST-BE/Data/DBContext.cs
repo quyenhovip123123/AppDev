@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ST_BE.Helpers;
 using ST_BE.Models;
 
 namespace ST_BE.Data
@@ -11,6 +12,9 @@ namespace ST_BE.Data
             public DbSet<Category> Categories { get; set; }
             public DbSet<Product> Products { get; set; }
             public DbSet<Customers> Customers { get; set; }
+            public DbSet<User> Users { get; set; }
+            public DbSet<Order> Orders { get; set; }
+            public DbSet<OrderDetail> OrderDetails { get; set; }
 
         // Cấu hình dữ liệu mồi ban đầu (Data Seeding)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -492,6 +496,33 @@ namespace ST_BE.Data
                new Product { ProductId = 44, Barcode = "8938501234044", ProductName = "Hộp lưu trữ tài liệu", Price = 55000, StockQuantity = 25, CategoryId = 5 },
                new Product { ProductId = 45, Barcode = "8938501234045", ProductName = "Bìa hồ sơ có dây", Price = 10000, StockQuantity = 75, CategoryId = 5 }
            );
+
+            // Bộ 15 tài khoản mẫu phân quyền (Buổi 4) - mật khẩu mặc định: 123456
+            modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+            var defaultHash = PasswordHelper.Hash("123456");
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "admin01", PasswordHash = defaultHash, FullName = "Nguyễn Quản Trị", Email = "admin01@minimart.vn", Role = "Admin", IsActive = true },
+                new User { Id = 2, Username = "admin02", PasswordHash = defaultHash, FullName = "Trần Giám Đốc", Email = "admin02@minimart.vn", Role = "Admin", IsActive = true },
+                new User { Id = 3, Username = "cashier01", PasswordHash = defaultHash, FullName = "Lê Thu Ngân", Email = "cashier01@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { Id = 4, Username = "cashier02", PasswordHash = defaultHash, FullName = "Phạm Bán Hàng", Email = "cashier02@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { Id = 5, Username = "cashier03", PasswordHash = defaultHash, FullName = "Hoàng Thu Ngân", Email = "cashier03@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { Id = 6, Username = "cashier04", PasswordHash = defaultHash, FullName = "Vũ Thị Quầy", Email = "cashier04@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { Id = 7, Username = "cashier05", PasswordHash = defaultHash, FullName = "Đỗ Bán Lẻ", Email = "cashier05@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { Id = 8, Username = "ware01", PasswordHash = defaultHash, FullName = "Ngô Quản Kho", Email = "ware01@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { Id = 9, Username = "ware02", PasswordHash = defaultHash, FullName = "Bùi Kiểm Kê", Email = "ware02@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { Id = 10, Username = "ware03", PasswordHash = defaultHash, FullName = "Dương Thủ Kho", Email = "ware03@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { Id = 11, Username = "ware04", PasswordHash = defaultHash, FullName = "Lý Nhập Hàng", Email = "ware04@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { Id = 12, Username = "admin_backup", PasswordHash = defaultHash, FullName = "Đặng Hỗ Trợ", Email = "admin_backup@minimart.vn", Role = "Admin", IsActive = true },
+                new User { Id = 13, Username = "cashier06", PasswordHash = defaultHash, FullName = "Hồ Ca Chiều", Email = "cashier06@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { Id = 14, Username = "ware05", PasswordHash = defaultHash, FullName = "Trương Vận Chuyển", Email = "ware05@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { Id = 15, Username = "supervisor", PasswordHash = defaultHash, FullName = "Mai Giám Sát", Email = "supervisor@minimart.vn", Role = "Admin", IsActive = true }
+            );
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(d => d.Product)
+                .WithMany()
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

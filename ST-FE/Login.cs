@@ -14,12 +14,6 @@ namespace ST_FE
 {
     public partial class Login : Form
     {
-        // Khởi tạo HttpClient trỏ đến địa chỉ của Web API Backend
-        private static readonly HttpClient _client = new HttpClient
-        {
-            BaseAddress = new Uri("https://localhost:7123/api/")
-        };
-
         public Login()
         {
             InitializeComponent();
@@ -39,31 +33,22 @@ namespace ST_FE
 
             try
             {
-                // Đóng gói dữ liệu gửi lên endpoint POST /api/auth/login
-                var loginData = new { Username = username, Password = password };
-                var response = await _client.PostAsJsonAsync("auth/login", loginData);
+                // Gọi POST /api/auth/login, lưu Token + Username + Role vào SessionManager
+                bool success = await ApiClientService.LoginAsync(username, password);
 
-                if (response.IsSuccessStatusCode)
+                if (success)
                 {
-                    // Đọc chuỗi JSON trả về từ Server khi đăng nhập thành công
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    using var doc = JsonDocument.Parse(jsonString);
-
-                    // Trích xuất Token và Role lưu vào lớp tĩnh SessionManager dùng chung toàn ứng dụng
-                    SessionManager.JwtToken = doc.RootElement.GetProperty("token").GetString() ?? string.Empty;
-                    SessionManager.CurrentRole = doc.RootElement.GetProperty("role").GetString() ?? string.Empty;
-
                     MessageBox.Show($"Đăng nhập thành công với quyền: {SessionManager.CurrentRole}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // Mở Form quản lý chính (FormCategoryManagement) và ẩn Form đăng nhập đi
-                    FormCustomerManagement mainForm = new FormCustomerManagement();
+                    // Mở khung chính FormMainShell (tự phân quyền theo vai trò) và ẩn Form đăng nhập
+                    FormMainShell mainForm = new FormMainShell();
                     this.Hide();
                     mainForm.ShowDialog();
                     this.Close(); // Đóng hẳn ứng dụng khi form chính tắt
                 }
                 else
                 {
-                    MessageBox.Show("Sai tài khoản hoặc mật khẩu!", "Đăng nhập thất bại", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Sai tài khoản, mật khẩu hoặc tài khoản đã bị khóa!", "Đăng nhập thất bại", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtPass.Text = "";
                 }
             }

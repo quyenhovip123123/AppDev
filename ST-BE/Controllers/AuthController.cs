@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ST_BE.Data;
+using ST_BE.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,29 +14,42 @@ namespace ST_BE.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly DBContext _context;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, DBContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         // Endpoint Đăng nhập: POST /api/auth/login
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequestDto request)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-            // Kiểm tra tài khoản mẫu (Trong thực tế sẽ truy vấn qua EF Core / SQL Server)
-            if (request.Username == "admin" && request.Password == "123456")
+            // Tra cứu tài khoản trong bảng Users (15 tài khoản mẫu Buổi 4)
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Username == request.Username);
+
+            if (user == null || !PasswordHelper.Verify(request.Password, user.PasswordHash))
             {
-                var token = GenerateJwtToken(request.Username, "Admin");
-                return Ok(new { success = true, token = token, role = "Admin" });
-            }
-            else if (request.Username == "cashier" && request.Password == "123456")
-            {
-                var token = GenerateJwtToken(request.Username, "Cashier");
-                return Ok(new { success = true, token = token, role = "Cashier" });
+                return Unauthorized(new { success = false, message = "Sai tài khoản hoặc mật khẩu!" });
             }
 
-            return Unauthorized(new { success = false, message = "Sai tài khoản hoặc mật khẩu!" });
+            if (!user.IsActive)
+            {
+                return Unauthorized(new { success = false, message = "Tài khoản đã bị khóa!" });
+            }
+
+            var token = GenerateJwtToken(user.Username, user.Role);
+            return Ok(new
+            {
+                success = true,
+                token = token,
+                role = user.Role,
+                username = user.Username,
+                fullName = user.FullName
+            });
         }
 
         private string GenerateJwtToken(string username, string role)

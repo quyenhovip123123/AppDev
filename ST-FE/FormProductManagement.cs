@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ST_FE.WinForms
+namespace ST_FE
 {
     public partial class FormProductManagement : Form
     {
@@ -534,5 +534,16 @@ namespace ST_FE.WinForms
 
             txtBarcode.Focus();
         }
+    }
+
+    public class ProductDto
+    {
+        public int ProductId { get; set; }
+        public string Barcode { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public int StockQuantity { get; set; }
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
     }
 }
