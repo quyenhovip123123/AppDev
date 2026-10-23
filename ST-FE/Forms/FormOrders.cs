@@ -17,6 +17,7 @@ namespace ST_FE.Forms
                 new GridColumn(nameof(OrderDto.CustomerName), "Khách hàng", 130),
                 new GridColumn(nameof(OrderDto.SubTotal), "Tiền hàng", 90, "N0"),
                 new GridColumn(nameof(OrderDto.Discount), "Giảm giá", 80, "N0"),
+                new GridColumn(nameof(OrderDto.PointsDiscount), "Trừ điểm", 70, "N0"),
                 new GridColumn(nameof(OrderDto.TotalAmount), "Thành tiền", 90, "N0"),
                 new GridColumn(nameof(OrderDto.StatusText), "Trạng thái", 80));
             dgvOrders.DataBindingComplete += (_, _) =>
@@ -28,7 +29,8 @@ namespace ST_FE.Forms
 
             UiHelper.StyleButton(btnViewDetail, UiHelper.Primary);
             UiHelper.StyleButton(btnCancelOrder, UiHelper.Danger);
-            btnCancelOrder.Visible = Session.IsAdmin;
+            UiHelper.StyleButton(btnExport, UiHelper.Success);
+            if (!Session.IsAdmin) UiHelper.StyleLocked(btnCancelOrder);
 
             dtpFrom.Value = DateTime.Today.AddDays(-30);
             dtpTo.Value = DateTime.Today;
@@ -49,6 +51,35 @@ namespace ST_FE.Forms
 
                 var completed = orders.Where(o => o.Status != "Cancelled").ToList();
                 lblSummary.Text = $"{completed.Count} hóa đơn hoàn thành  •  Doanh thu: {UiHelper.Money(completed.Sum(o => o.TotalAmount))}";
+            }
+            catch (Exception ex)
+            {
+                UiHelper.ShowError(ex);
+            }
+        }
+
+        // Xuất danh sách hóa đơn (doanh thu) đang hiển thị ra tệp CSV mở bằng Excel
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            if (dgvOrders.DataSource is not List<OrderDto> orders || orders.Count == 0)
+            {
+                UiHelper.ShowWarning("Không có hóa đơn nào để xuất!");
+                return;
+            }
+            try
+            {
+                var saved = CsvExporter.SaveWithDialog(this, $"DoanhThu_{dtpFrom.Value:yyyyMMdd}-{dtpTo.Value:yyyyMMdd}.csv", orders,
+                    new("Mã hóa đơn", o => o.OrderCode),
+                    new("Ngày lập", o => o.CreatedAt),
+                    new("Nhân viên", o => o.StaffName),
+                    new("Khách hàng", o => o.CustomerName),
+                    new("Tiền hàng", o => o.SubTotal),
+                    new("Giảm giá", o => o.Discount),
+                    new("Điểm đã dùng", o => o.PointsUsed),
+                    new("Trừ tiền điểm", o => o.PointsDiscount),
+                    new("Thành tiền", o => o.TotalAmount),
+                    new("Trạng thái", o => o.StatusText));
+                if (saved) UiHelper.ShowInfo($"Đã xuất {orders.Count} hóa đơn ra tệp CSV.");
             }
             catch (Exception ex)
             {
@@ -86,6 +117,7 @@ namespace ST_FE.Forms
 
         private async void btnCancelOrder_Click(object sender, EventArgs e)
         {
+            if (!UiHelper.RequireAdmin("hủy hóa đơn")) return;
             var order = dgvOrders.SelectedItem<OrderDto>();
             if (order == null)
             {

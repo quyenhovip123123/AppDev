@@ -44,6 +44,7 @@ namespace ST_FE.Models
     {
         public int ProductId { get; set; }
         public string ProductCode { get; set; } = string.Empty;
+        public string? Barcode { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
@@ -88,6 +89,8 @@ namespace ST_FE.Models
         public string CustomerName { get; set; } = string.Empty;
         public decimal SubTotal { get; set; }
         public decimal Discount { get; set; }
+        public int PointsUsed { get; set; }
+        public decimal PointsDiscount { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal CustomerPaid { get; set; }
         public decimal ChangeAmount { get; set; }
@@ -148,6 +151,25 @@ namespace ST_FE.Models
         public List<DailyRevenueDto> DailyRevenue { get; set; } = new();
         public List<TopProductDto> TopProducts { get; set; } = new();
         public List<ProductDto> LowStockProducts { get; set; } = new();
+    }
+
+    // GET /api/reports/dashboard-summary
+    public class DashboardSummaryDto
+    {
+        public decimal TodayRevenue { get; set; }
+        public int TodayOrderCount { get; set; }
+        public int NewCustomerCount { get; set; }
+        public int LowStockCount { get; set; }
+    }
+
+    // Kết quả phân trang từ máy chủ
+    public class PagedResult<T>
+    {
+        public List<T> Items { get; set; } = new();
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalCount { get; set; }
+        public int TotalPages { get; set; }
     }
 
     // Dòng trong giỏ hàng (bán hàng) / phiếu nhập — chỉ dùng trên Client

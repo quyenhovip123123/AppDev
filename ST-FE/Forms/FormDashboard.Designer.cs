@@ -28,20 +28,20 @@ namespace ST_FE.Forms
             dgvTopProducts = new DataGridView();
             grpLowStock = new GroupBox();
             dgvLowStock = new DataGridView();
-            pnlChart = new Panel();
+            chartRevenue = new System.Windows.Forms.DataVisualization.Charting.Chart();
             flpCards = new FlowLayoutPanel();
-            pnlCardRevenue = new Panel();
-            lblRevenueTitle = new Label();
-            lblRevenue = new Label();
-            pnlCardProfit = new Panel();
-            lblProfitTitle = new Label();
-            lblProfit = new Label();
-            pnlCardOrders = new Panel();
-            lblOrdersTitle = new Label();
-            lblOrders = new Label();
-            pnlCardImport = new Panel();
-            lblImportTitle = new Label();
-            lblImport = new Label();
+            pnlCardTodayRevenue = new Panel();
+            lblTodayRevenueTitle = new Label();
+            lblTodayRevenue = new Label();
+            pnlCardTodayOrders = new Panel();
+            lblTodayOrdersTitle = new Label();
+            lblTodayOrders = new Label();
+            pnlCardNewCustomers = new Panel();
+            lblNewCustomersTitle = new Label();
+            lblNewCustomers = new Label();
+            pnlCardLowStock = new Panel();
+            lblLowStockTitle = new Label();
+            lblLowStock = new Label();
             pnlFilter = new Panel();
             lblFrom = new Label();
             dtpFrom = new DateTimePicker();
@@ -56,12 +56,12 @@ namespace ST_FE.Forms
             ((System.ComponentModel.ISupportInitialize)dgvTopProducts).BeginInit();
             grpLowStock.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvLowStock).BeginInit();
-            pnlChart.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)chartRevenue).BeginInit();
             flpCards.SuspendLayout();
-            pnlCardRevenue.SuspendLayout();
-            pnlCardProfit.SuspendLayout();
-            pnlCardOrders.SuspendLayout();
-            pnlCardImport.SuspendLayout();
+            pnlCardTodayRevenue.SuspendLayout();
+            pnlCardTodayOrders.SuspendLayout();
+            pnlCardNewCustomers.SuspendLayout();
+            pnlCardLowStock.SuspendLayout();
             pnlFilter.SuspendLayout();
             SuspendLayout();
             // 
@@ -88,7 +88,7 @@ namespace ST_FE.Forms
             grpTopProducts.Name = "grpTopProducts";
             grpTopProducts.Size = new Size(507, 190);
             grpTopProducts.TabIndex = 0;
-            grpTopProducts.Text = "Top 10 mặt hàng bán chạy";
+            grpTopProducts.Text = "Top 5 mặt hàng bán chạy";
             // 
             // dgvTopProducts
             // 
@@ -116,148 +116,146 @@ namespace ST_FE.Forms
             dgvLowStock.Size = new Size(501, 166);
             dgvLowStock.TabIndex = 0;
             // 
-            // pnlChart
+            // chartRevenue
             // 
-            pnlChart.BackColor = Color.White;
-            pnlChart.Dock = DockStyle.Top;
-            pnlChart.Location = new Point(12, 182);
-            pnlChart.Name = "pnlChart";
-            pnlChart.Size = new Size(1026, 250);
-            pnlChart.TabIndex = 1;
-            pnlChart.Paint += pnlChart_Paint;
-            pnlChart.Resize += pnlChart_Resize;
+            chartRevenue.BackColor = Color.White;
+            chartRevenue.Dock = DockStyle.Top;
+            chartRevenue.Location = new Point(12, 182);
+            chartRevenue.Name = "chartRevenue";
+            chartRevenue.Size = new Size(1026, 250);
+            chartRevenue.TabIndex = 1;
             // 
             // flpCards
             // 
-            flpCards.Controls.Add(pnlCardRevenue);
-            flpCards.Controls.Add(pnlCardProfit);
-            flpCards.Controls.Add(pnlCardOrders);
-            flpCards.Controls.Add(pnlCardImport);
+            flpCards.Controls.Add(pnlCardTodayRevenue);
+            flpCards.Controls.Add(pnlCardTodayOrders);
+            flpCards.Controls.Add(pnlCardNewCustomers);
+            flpCards.Controls.Add(pnlCardLowStock);
             flpCards.Dock = DockStyle.Top;
             flpCards.Location = new Point(12, 64);
             flpCards.Name = "flpCards";
             flpCards.Size = new Size(1026, 118);
             flpCards.TabIndex = 2;
             // 
-            // pnlCardRevenue
+            // pnlCardTodayRevenue
             // 
-            pnlCardRevenue.Controls.Add(lblRevenueTitle);
-            pnlCardRevenue.Controls.Add(lblRevenue);
-            pnlCardRevenue.BackColor = Color.FromArgb(22, 163, 74);
-            pnlCardRevenue.Location = new Point(3, 3);
-            pnlCardRevenue.Margin = new Padding(0, 0, 12, 12);
-            pnlCardRevenue.Name = "pnlCardRevenue";
-            pnlCardRevenue.Size = new Size(240, 100);
-            pnlCardRevenue.TabIndex = 0;
+            pnlCardTodayRevenue.Controls.Add(lblTodayRevenueTitle);
+            pnlCardTodayRevenue.Controls.Add(lblTodayRevenue);
+            pnlCardTodayRevenue.BackColor = Color.FromArgb(22, 163, 74);
+            pnlCardTodayRevenue.Location = new Point(3, 3);
+            pnlCardTodayRevenue.Margin = new Padding(0, 0, 12, 12);
+            pnlCardTodayRevenue.Name = "pnlCardTodayRevenue";
+            pnlCardTodayRevenue.Size = new Size(240, 100);
+            pnlCardTodayRevenue.TabIndex = 0;
             // 
-            // lblRevenueTitle
+            // lblTodayRevenueTitle
             // 
-            lblRevenueTitle.ForeColor = Color.White;
-            lblRevenueTitle.Location = new Point(14, 12);
-            lblRevenueTitle.Name = "lblRevenueTitle";
-            lblRevenueTitle.Size = new Size(216, 22);
-            lblRevenueTitle.TabIndex = 0;
-            lblRevenueTitle.Text = "Doanh thu";
+            lblTodayRevenueTitle.ForeColor = Color.White;
+            lblTodayRevenueTitle.Location = new Point(14, 12);
+            lblTodayRevenueTitle.Name = "lblTodayRevenueTitle";
+            lblTodayRevenueTitle.Size = new Size(216, 22);
+            lblTodayRevenueTitle.TabIndex = 0;
+            lblTodayRevenueTitle.Text = "Doanh thu hôm nay";
             // 
-            // lblRevenue
+            // lblTodayRevenue
             // 
-            lblRevenue.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblRevenue.ForeColor = Color.White;
-            lblRevenue.Location = new Point(12, 42);
-            lblRevenue.Name = "lblRevenue";
-            lblRevenue.Size = new Size(220, 40);
-            lblRevenue.TabIndex = 1;
-            lblRevenue.Text = "0";
+            lblTodayRevenue.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblTodayRevenue.ForeColor = Color.White;
+            lblTodayRevenue.Location = new Point(12, 42);
+            lblTodayRevenue.Name = "lblTodayRevenue";
+            lblTodayRevenue.Size = new Size(220, 40);
+            lblTodayRevenue.TabIndex = 1;
+            lblTodayRevenue.Text = "0";
             // 
-            // pnlCardProfit
+            // pnlCardTodayOrders
             // 
-            pnlCardProfit.Controls.Add(lblProfitTitle);
-            pnlCardProfit.Controls.Add(lblProfit);
-            pnlCardProfit.BackColor = Color.FromArgb(37, 99, 235);
-            pnlCardProfit.Location = new Point(255, 3);
-            pnlCardProfit.Margin = new Padding(0, 0, 12, 12);
-            pnlCardProfit.Name = "pnlCardProfit";
-            pnlCardProfit.Size = new Size(240, 100);
-            pnlCardProfit.TabIndex = 1;
+            pnlCardTodayOrders.Controls.Add(lblTodayOrdersTitle);
+            pnlCardTodayOrders.Controls.Add(lblTodayOrders);
+            pnlCardTodayOrders.BackColor = Color.FromArgb(37, 99, 235);
+            pnlCardTodayOrders.Location = new Point(255, 3);
+            pnlCardTodayOrders.Margin = new Padding(0, 0, 12, 12);
+            pnlCardTodayOrders.Name = "pnlCardTodayOrders";
+            pnlCardTodayOrders.Size = new Size(240, 100);
+            pnlCardTodayOrders.TabIndex = 1;
             // 
-            // lblProfitTitle
+            // lblTodayOrdersTitle
             // 
-            lblProfitTitle.ForeColor = Color.White;
-            lblProfitTitle.Location = new Point(14, 12);
-            lblProfitTitle.Name = "lblProfitTitle";
-            lblProfitTitle.Size = new Size(216, 22);
-            lblProfitTitle.TabIndex = 0;
-            lblProfitTitle.Text = "Lợi nhuận gộp";
+            lblTodayOrdersTitle.ForeColor = Color.White;
+            lblTodayOrdersTitle.Location = new Point(14, 12);
+            lblTodayOrdersTitle.Name = "lblTodayOrdersTitle";
+            lblTodayOrdersTitle.Size = new Size(216, 22);
+            lblTodayOrdersTitle.TabIndex = 0;
+            lblTodayOrdersTitle.Text = "Hóa đơn đã xuất hôm nay";
             // 
-            // lblProfit
+            // lblTodayOrders
             // 
-            lblProfit.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblProfit.ForeColor = Color.White;
-            lblProfit.Location = new Point(12, 42);
-            lblProfit.Name = "lblProfit";
-            lblProfit.Size = new Size(220, 40);
-            lblProfit.TabIndex = 1;
-            lblProfit.Text = "0";
+            lblTodayOrders.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblTodayOrders.ForeColor = Color.White;
+            lblTodayOrders.Location = new Point(12, 42);
+            lblTodayOrders.Name = "lblTodayOrders";
+            lblTodayOrders.Size = new Size(220, 40);
+            lblTodayOrders.TabIndex = 1;
+            lblTodayOrders.Text = "0";
             // 
-            // pnlCardOrders
+            // pnlCardNewCustomers
             // 
-            pnlCardOrders.Controls.Add(lblOrdersTitle);
-            pnlCardOrders.Controls.Add(lblOrders);
-            pnlCardOrders.BackColor = Color.FromArgb(245, 158, 11);
-            pnlCardOrders.Location = new Point(507, 3);
-            pnlCardOrders.Margin = new Padding(0, 0, 12, 12);
-            pnlCardOrders.Name = "pnlCardOrders";
-            pnlCardOrders.Size = new Size(240, 100);
-            pnlCardOrders.TabIndex = 2;
+            pnlCardNewCustomers.Controls.Add(lblNewCustomersTitle);
+            pnlCardNewCustomers.Controls.Add(lblNewCustomers);
+            pnlCardNewCustomers.BackColor = Color.FromArgb(245, 158, 11);
+            pnlCardNewCustomers.Location = new Point(507, 3);
+            pnlCardNewCustomers.Margin = new Padding(0, 0, 12, 12);
+            pnlCardNewCustomers.Name = "pnlCardNewCustomers";
+            pnlCardNewCustomers.Size = new Size(240, 100);
+            pnlCardNewCustomers.TabIndex = 2;
             // 
-            // lblOrdersTitle
+            // lblNewCustomersTitle
             // 
-            lblOrdersTitle.ForeColor = Color.White;
-            lblOrdersTitle.Location = new Point(14, 12);
-            lblOrdersTitle.Name = "lblOrdersTitle";
-            lblOrdersTitle.Size = new Size(216, 22);
-            lblOrdersTitle.TabIndex = 0;
-            lblOrdersTitle.Text = "Số hóa đơn";
+            lblNewCustomersTitle.ForeColor = Color.White;
+            lblNewCustomersTitle.Location = new Point(14, 12);
+            lblNewCustomersTitle.Name = "lblNewCustomersTitle";
+            lblNewCustomersTitle.Size = new Size(216, 22);
+            lblNewCustomersTitle.TabIndex = 0;
+            lblNewCustomersTitle.Text = "Khách hàng mới (tháng này)";
             // 
-            // lblOrders
+            // lblNewCustomers
             // 
-            lblOrders.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblOrders.ForeColor = Color.White;
-            lblOrders.Location = new Point(12, 42);
-            lblOrders.Name = "lblOrders";
-            lblOrders.Size = new Size(220, 40);
-            lblOrders.TabIndex = 1;
-            lblOrders.Text = "0";
+            lblNewCustomers.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblNewCustomers.ForeColor = Color.White;
+            lblNewCustomers.Location = new Point(12, 42);
+            lblNewCustomers.Name = "lblNewCustomers";
+            lblNewCustomers.Size = new Size(220, 40);
+            lblNewCustomers.TabIndex = 1;
+            lblNewCustomers.Text = "0";
             // 
-            // pnlCardImport
+            // pnlCardLowStock
             // 
-            pnlCardImport.Controls.Add(lblImportTitle);
-            pnlCardImport.Controls.Add(lblImport);
-            pnlCardImport.BackColor = Color.FromArgb(220, 38, 38);
-            pnlCardImport.Location = new Point(759, 3);
-            pnlCardImport.Margin = new Padding(0, 0, 12, 12);
-            pnlCardImport.Name = "pnlCardImport";
-            pnlCardImport.Size = new Size(240, 100);
-            pnlCardImport.TabIndex = 3;
+            pnlCardLowStock.Controls.Add(lblLowStockTitle);
+            pnlCardLowStock.Controls.Add(lblLowStock);
+            pnlCardLowStock.BackColor = Color.FromArgb(220, 38, 38);
+            pnlCardLowStock.Location = new Point(759, 3);
+            pnlCardLowStock.Margin = new Padding(0, 0, 12, 12);
+            pnlCardLowStock.Name = "pnlCardLowStock";
+            pnlCardLowStock.Size = new Size(240, 100);
+            pnlCardLowStock.TabIndex = 3;
             // 
-            // lblImportTitle
+            // lblLowStockTitle
             // 
-            lblImportTitle.ForeColor = Color.White;
-            lblImportTitle.Location = new Point(14, 12);
-            lblImportTitle.Name = "lblImportTitle";
-            lblImportTitle.Size = new Size(216, 22);
-            lblImportTitle.TabIndex = 0;
-            lblImportTitle.Text = "Tiền nhập hàng";
+            lblLowStockTitle.ForeColor = Color.White;
+            lblLowStockTitle.Location = new Point(14, 12);
+            lblLowStockTitle.Name = "lblLowStockTitle";
+            lblLowStockTitle.Size = new Size(216, 22);
+            lblLowStockTitle.TabIndex = 0;
+            lblLowStockTitle.Text = "Mặt hàng sắp hết (tồn ≤ 10)";
             // 
-            // lblImport
+            // lblLowStock
             // 
-            lblImport.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblImport.ForeColor = Color.White;
-            lblImport.Location = new Point(12, 42);
-            lblImport.Name = "lblImport";
-            lblImport.Size = new Size(220, 40);
-            lblImport.TabIndex = 1;
-            lblImport.Text = "0";
+            lblLowStock.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblLowStock.ForeColor = Color.White;
+            lblLowStock.Location = new Point(12, 42);
+            lblLowStock.Name = "lblLowStock";
+            lblLowStock.Size = new Size(220, 40);
+            lblLowStock.TabIndex = 1;
+            lblLowStock.Text = "0";
             // 
             // pnlFilter
             // 
@@ -354,7 +352,7 @@ namespace ST_FE.Forms
             BackColor = Color.FromArgb(249, 250, 251);
             ClientSize = new Size(1050, 640);
             Controls.Add(tlpBottom);
-            Controls.Add(pnlChart);
+            Controls.Add(chartRevenue);
             Controls.Add(flpCards);
             Controls.Add(pnlFilter);
             Font = new Font("Segoe UI", 10F);
@@ -370,18 +368,17 @@ namespace ST_FE.Forms
             grpTopProducts.PerformLayout();
             grpLowStock.ResumeLayout(false);
             grpLowStock.PerformLayout();
-            pnlChart.ResumeLayout(false);
-            pnlChart.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)chartRevenue).EndInit();
             flpCards.ResumeLayout(false);
             flpCards.PerformLayout();
-            pnlCardRevenue.ResumeLayout(false);
-            pnlCardRevenue.PerformLayout();
-            pnlCardProfit.ResumeLayout(false);
-            pnlCardProfit.PerformLayout();
-            pnlCardOrders.ResumeLayout(false);
-            pnlCardOrders.PerformLayout();
-            pnlCardImport.ResumeLayout(false);
-            pnlCardImport.PerformLayout();
+            pnlCardTodayRevenue.ResumeLayout(false);
+            pnlCardTodayRevenue.PerformLayout();
+            pnlCardTodayOrders.ResumeLayout(false);
+            pnlCardTodayOrders.PerformLayout();
+            pnlCardNewCustomers.ResumeLayout(false);
+            pnlCardNewCustomers.PerformLayout();
+            pnlCardLowStock.ResumeLayout(false);
+            pnlCardLowStock.PerformLayout();
             pnlFilter.ResumeLayout(false);
             pnlFilter.PerformLayout();
             ResumeLayout(false);
@@ -395,20 +392,20 @@ namespace ST_FE.Forms
         private DataGridView dgvTopProducts;
         private GroupBox grpLowStock;
         private DataGridView dgvLowStock;
-        private Panel pnlChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartRevenue;
         private FlowLayoutPanel flpCards;
-        private Panel pnlCardRevenue;
-        private Label lblRevenueTitle;
-        private Label lblRevenue;
-        private Panel pnlCardProfit;
-        private Label lblProfitTitle;
-        private Label lblProfit;
-        private Panel pnlCardOrders;
-        private Label lblOrdersTitle;
-        private Label lblOrders;
-        private Panel pnlCardImport;
-        private Label lblImportTitle;
-        private Label lblImport;
+        private Panel pnlCardTodayRevenue;
+        private Label lblTodayRevenueTitle;
+        private Label lblTodayRevenue;
+        private Panel pnlCardTodayOrders;
+        private Label lblTodayOrdersTitle;
+        private Label lblTodayOrders;
+        private Panel pnlCardNewCustomers;
+        private Label lblNewCustomersTitle;
+        private Label lblNewCustomers;
+        private Panel pnlCardLowStock;
+        private Label lblLowStockTitle;
+        private Label lblLowStock;
         private Panel pnlFilter;
         private Label lblFrom;
         private DateTimePicker dtpFrom;

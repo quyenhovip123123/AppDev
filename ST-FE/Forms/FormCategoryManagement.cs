@@ -18,10 +18,11 @@ namespace ST_FE.Forms
             UiHelper.StyleButton(btnUpdate, UiHelper.Primary);
             UiHelper.StyleButton(btnDelete, UiHelper.Danger);
 
-            // Nhân viên chỉ được xem (server cũng chặn bằng [Authorize(Roles = "Admin")])
+            // Nhân viên chỉ được xem: bấm Thêm/Sửa/Xóa sẽ hiện hộp thoại "Không đủ quyền hạn"
+            // (server cũng chặn bằng [Authorize(Roles = "Admin")])
             if (!Session.IsAdmin)
             {
-                btnAdd.Enabled = btnUpdate.Enabled = btnDelete.Enabled = false;
+                foreach (var btn in new[] { btnAdd, btnUpdate, btnDelete }) UiHelper.StyleLocked(btn);
                 txtCategoryName.ReadOnly = txtDescription.ReadOnly = true;
                 grpInfo.Text += " (chỉ xem)";
             }
@@ -94,6 +95,7 @@ namespace ST_FE.Forms
 
         private async void btnAdd_Click(object sender, EventArgs e)
         {
+            if (!UiHelper.RequireAdmin("thêm nhóm hàng")) return;
             if (!ValidateInput()) return;
             await UiHelper.RunBusyAsync(this, async () =>
             {
@@ -106,6 +108,7 @@ namespace ST_FE.Forms
 
         private async void btnUpdate_Click(object sender, EventArgs e)
         {
+            if (!UiHelper.RequireAdmin("cập nhật nhóm hàng")) return;
             if (string.IsNullOrEmpty(txtId.Text))
             {
                 UiHelper.ShowWarning("Vui lòng chọn nhóm hàng cần sửa!");
@@ -123,6 +126,7 @@ namespace ST_FE.Forms
 
         private async void btnDelete_Click(object sender, EventArgs e)
         {
+            if (!UiHelper.RequireAdmin("xóa nhóm hàng")) return;
             if (string.IsNullOrEmpty(txtId.Text))
             {
                 UiHelper.ShowWarning("Vui lòng chọn nhóm hàng cần xóa!");

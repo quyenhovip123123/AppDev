@@ -22,8 +22,8 @@ namespace ST_FE.Forms
             UiHelper.StyleButton(btnUpdate, UiHelper.Primary);
             UiHelper.StyleButton(btnDelete, UiHelper.Danger);
 
-            // Nhân viên được thêm/sửa khách hàng nhưng không được xóa
-            btnDelete.Enabled = Session.IsAdmin;
+            // Nhân viên được thêm/sửa khách hàng nhưng không được xóa (bấm Xóa sẽ hiện hộp thoại báo không đủ quyền)
+            if (!Session.IsAdmin) UiHelper.StyleLocked(btnDelete);
         }
 
         private async void FormCustomers_Load(object sender, EventArgs e)
@@ -128,6 +128,7 @@ namespace ST_FE.Forms
 
         private async void btnDelete_Click(object sender, EventArgs e)
         {
+            if (!UiHelper.RequireAdmin("xóa khách hàng")) return;
             if (_selectedId == null)
             {
                 UiHelper.ShowWarning("Vui lòng chọn khách hàng cần xóa!");

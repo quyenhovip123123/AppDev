@@ -5,3 +5,11 @@ obj/
 *.db
 *.db-shm
 *.db-wal
+node_modules/
+*.suo
+*.log
+TestResults/
+# Bảng điểm lớp (có dữ liệu của sinh viên khác) và file khóa tạm của LibreOffice/Office
+*.xlsx
+.~lock.*#
+~$*

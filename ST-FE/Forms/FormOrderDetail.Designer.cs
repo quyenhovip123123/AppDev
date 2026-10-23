@@ -110,7 +110,7 @@ namespace ST_FE.Forms
             btnPrint.Name = "btnPrint";
             btnPrint.Size = new Size(140, 38);
             btnPrint.TabIndex = 1;
-            btnPrint.Text = "🖨 In hóa đơn";
+            btnPrint.Text = "▤ In hóa đơn";
             btnPrint.UseVisualStyleBackColor = true;
             btnPrint.Click += btnPrint_Click;
             // 

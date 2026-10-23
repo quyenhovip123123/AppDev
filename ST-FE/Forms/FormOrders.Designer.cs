@@ -34,6 +34,7 @@ namespace ST_FE.Forms
             btnViewDetail = new Button();
             btnCancelOrder = new Button();
             lblSummary = new Label();
+            btnExport = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvOrders).BeginInit();
             pnlFilter.SuspendLayout();
             SuspendLayout();
@@ -57,6 +58,7 @@ namespace ST_FE.Forms
             pnlFilter.Controls.Add(btnSearch);
             pnlFilter.Controls.Add(btnViewDetail);
             pnlFilter.Controls.Add(btnCancelOrder);
+            pnlFilter.Controls.Add(btnExport);
             pnlFilter.Dock = DockStyle.Top;
             pnlFilter.Location = new Point(12, 12);
             pnlFilter.Name = "pnlFilter";
@@ -110,7 +112,7 @@ namespace ST_FE.Forms
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(100, 32);
             btnSearch.TabIndex = 5;
-            btnSearch.Text = "🔍 Lọc";
+            btnSearch.Text = "⚲ Lọc";
             btnSearch.UseVisualStyleBackColor = true;
             btnSearch.Click += btnSearch_Click;
             // 
@@ -133,6 +135,16 @@ namespace ST_FE.Forms
             btnCancelOrder.Text = "Hủy hóa đơn";
             btnCancelOrder.UseVisualStyleBackColor = true;
             btnCancelOrder.Click += btnCancelOrder_Click;
+            // 
+            // btnExport
+            // 
+            btnExport.Location = new Point(935, 5);
+            btnExport.Name = "btnExport";
+            btnExport.Size = new Size(90, 32);
+            btnExport.TabIndex = 8;
+            btnExport.Text = "▤ Excel";
+            btnExport.UseVisualStyleBackColor = true;
+            btnExport.Click += btnExport_Click;
             // 
             // lblSummary
             // 
@@ -179,5 +191,6 @@ namespace ST_FE.Forms
         private Button btnViewDetail;
         private Button btnCancelOrder;
         private Label lblSummary;
+        private Button btnExport;
     }
 }

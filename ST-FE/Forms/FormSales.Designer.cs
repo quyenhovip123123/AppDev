@@ -52,6 +52,8 @@ namespace ST_FE.Forms
             lblPaidCaption = new Label();
             btnExactCash = new Button();
             nudCustomerPaid = new NumericUpDown();
+            lblPointsCaption = new Label();
+            nudRedeemPoints = new NumericUpDown();
             lblChangeCaption = new Label();
             lblChange = new Label();
             txtNote = new TextBox();
@@ -65,6 +67,7 @@ namespace ST_FE.Forms
             pnlCheckout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudDiscount).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudCustomerPaid).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudRedeemPoints).BeginInit();
             SuspendLayout();
             // 
             // dgvProducts
@@ -206,7 +209,7 @@ namespace ST_FE.Forms
             lblCartTitle.Name = "lblCartTitle";
             lblCartTitle.Size = new Size(448, 32);
             lblCartTitle.TabIndex = 2;
-            lblCartTitle.Text = "🛒 Giỏ hàng";
+            lblCartTitle.Text = "▣ Giỏ hàng";
             lblCartTitle.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // pnlCheckout
@@ -220,6 +223,8 @@ namespace ST_FE.Forms
             pnlCheckout.Controls.Add(lblSubTotal);
             pnlCheckout.Controls.Add(lblDiscountCaption);
             pnlCheckout.Controls.Add(nudDiscount);
+            pnlCheckout.Controls.Add(lblPointsCaption);
+            pnlCheckout.Controls.Add(nudRedeemPoints);
             pnlCheckout.Controls.Add(lblTotalCaption);
             pnlCheckout.Controls.Add(lblTotal);
             pnlCheckout.Controls.Add(lblPaidCaption);
@@ -231,9 +236,9 @@ namespace ST_FE.Forms
             pnlCheckout.Controls.Add(btnCheckout);
             pnlCheckout.BackColor = Color.White;
             pnlCheckout.Dock = DockStyle.Bottom;
-            pnlCheckout.Location = new Point(12, 276);
+            pnlCheckout.Location = new Point(12, 243);
             pnlCheckout.Name = "pnlCheckout";
-            pnlCheckout.Size = new Size(448, 340);
+            pnlCheckout.Size = new Size(448, 373);
             pnlCheckout.TabIndex = 3;
             // 
             // lblCustomerPhone
@@ -320,11 +325,32 @@ namespace ST_FE.Forms
             nudDiscount.ThousandsSeparator = true;
             nudDiscount.ValueChanged += Totals_ValueChanged;
             // 
+            // lblPointsCaption
+            // 
+            lblPointsCaption.AutoSize = true;
+            lblPointsCaption.Location = new Point(10, 141);
+            lblPointsCaption.Name = "lblPointsCaption";
+            lblPointsCaption.TabIndex = 18;
+            lblPointsCaption.Text = "Dùng điểm (1 điểm = 1.000đ):";
+            // 
+            // nudRedeemPoints
+            // 
+            nudRedeemPoints.Enabled = false;
+            nudRedeemPoints.Increment = new decimal(new int[] { 10, 0, 0, 0 });
+            nudRedeemPoints.Location = new Point(260, 138);
+            nudRedeemPoints.Maximum = new decimal(new int[] { 0, 0, 0, 0 });
+            nudRedeemPoints.Name = "nudRedeemPoints";
+            nudRedeemPoints.Size = new Size(178, 25);
+            nudRedeemPoints.TabIndex = 19;
+            nudRedeemPoints.TextAlign = HorizontalAlignment.Right;
+            nudRedeemPoints.ThousandsSeparator = true;
+            nudRedeemPoints.ValueChanged += Totals_ValueChanged;
+            // 
             // lblTotalCaption
             // 
             lblTotalCaption.AutoSize = true;
             lblTotalCaption.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            lblTotalCaption.Location = new Point(10, 145);
+            lblTotalCaption.Location = new Point(10, 178);
             lblTotalCaption.Name = "lblTotalCaption";
             lblTotalCaption.TabIndex = 9;
             lblTotalCaption.Text = "KHÁCH CẦN TRẢ:";
@@ -333,7 +359,7 @@ namespace ST_FE.Forms
             // 
             lblTotal.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblTotal.ForeColor = Color.FromArgb(217, 119, 6);
-            lblTotal.Location = new Point(180, 138);
+            lblTotal.Location = new Point(180, 171);
             lblTotal.Name = "lblTotal";
             lblTotal.Size = new Size(258, 34);
             lblTotal.TabIndex = 10;
@@ -343,14 +369,14 @@ namespace ST_FE.Forms
             // lblPaidCaption
             // 
             lblPaidCaption.AutoSize = true;
-            lblPaidCaption.Location = new Point(10, 185);
+            lblPaidCaption.Location = new Point(10, 218);
             lblPaidCaption.Name = "lblPaidCaption";
             lblPaidCaption.TabIndex = 11;
             lblPaidCaption.Text = "Khách đưa (đ):";
             // 
             // btnExactCash
             // 
-            btnExactCash.Location = new Point(150, 181);
+            btnExactCash.Location = new Point(150, 214);
             btnExactCash.Name = "btnExactCash";
             btnExactCash.Size = new Size(100, 29);
             btnExactCash.TabIndex = 12;
@@ -361,7 +387,7 @@ namespace ST_FE.Forms
             // nudCustomerPaid
             // 
             nudCustomerPaid.Increment = new decimal(new int[] { 1000, 0, 0, 0 });
-            nudCustomerPaid.Location = new Point(260, 182);
+            nudCustomerPaid.Location = new Point(260, 215);
             nudCustomerPaid.Maximum = new decimal(new int[] { 1000000000, 0, 0, 0 });
             nudCustomerPaid.Name = "nudCustomerPaid";
             nudCustomerPaid.Size = new Size(178, 25);
@@ -373,7 +399,7 @@ namespace ST_FE.Forms
             // lblChangeCaption
             // 
             lblChangeCaption.AutoSize = true;
-            lblChangeCaption.Location = new Point(10, 220);
+            lblChangeCaption.Location = new Point(10, 253);
             lblChangeCaption.Name = "lblChangeCaption";
             lblChangeCaption.TabIndex = 14;
             lblChangeCaption.Text = "Tiền thừa trả khách:";
@@ -382,7 +408,7 @@ namespace ST_FE.Forms
             // 
             lblChange.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblChange.ForeColor = Color.FromArgb(22, 163, 74);
-            lblChange.Location = new Point(200, 217);
+            lblChange.Location = new Point(200, 250);
             lblChange.Name = "lblChange";
             lblChange.Size = new Size(238, 25);
             lblChange.TabIndex = 15;
@@ -391,7 +417,7 @@ namespace ST_FE.Forms
             // 
             // txtNote
             // 
-            txtNote.Location = new Point(10, 250);
+            txtNote.Location = new Point(10, 283);
             txtNote.MaxLength = 255;
             txtNote.Name = "txtNote";
             txtNote.PlaceholderText = "Ghi chú hóa đơn...";
@@ -400,11 +426,11 @@ namespace ST_FE.Forms
             // 
             // btnCheckout
             // 
-            btnCheckout.Location = new Point(10, 284);
+            btnCheckout.Location = new Point(10, 317);
             btnCheckout.Name = "btnCheckout";
             btnCheckout.Size = new Size(428, 48);
             btnCheckout.TabIndex = 17;
-            btnCheckout.Text = "💳  THANH TOÁN (F9)";
+            btnCheckout.Text = "✔  THANH TOÁN (F9)";
             btnCheckout.UseVisualStyleBackColor = true;
             btnCheckout.Click += btnCheckout_Click;
             // 
@@ -429,6 +455,7 @@ namespace ST_FE.Forms
             ((System.ComponentModel.ISupportInitialize)dgvCart).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudDiscount).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudCustomerPaid).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudRedeemPoints).EndInit();
             pnlProductSearch.ResumeLayout(false);
             pnlProductSearch.PerformLayout();
             pnlCart.ResumeLayout(false);
@@ -472,6 +499,8 @@ namespace ST_FE.Forms
         private Label lblPaidCaption;
         private Button btnExactCash;
         private NumericUpDown nudCustomerPaid;
+        private Label lblPointsCaption;
+        private NumericUpDown nudRedeemPoints;
         private Label lblChangeCaption;
         private Label lblChange;
         private TextBox txtNote;

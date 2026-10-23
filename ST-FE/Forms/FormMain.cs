@@ -16,7 +16,7 @@ namespace ST_FE.Forms
         {
             InitializeComponent();
 
-            lblUser.Text = $"👤 {Session.User?.FullName}  ({Session.RoleDisplay})";
+            lblUser.Text = $"☻ {Session.User?.FullName}  ({Session.RoleDisplay})";
             lblServer.Text = "Máy chủ: " + ApiClient.BaseUrl;
 
             // Phân quyền giao diện theo claim "role" trong JWT.

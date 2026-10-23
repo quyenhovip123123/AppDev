@@ -27,6 +27,8 @@ namespace ST_FE.Forms
             grpInfo = new GroupBox();
             lblCode = new Label();
             txtCode = new TextBox();
+            lblBarcode = new Label();
+            txtBarcode = new TextBox();
             lblName = new Label();
             txtName = new TextBox();
             lblCategory = new Label();
@@ -52,12 +54,18 @@ namespace ST_FE.Forms
             chkShowInactive = new CheckBox();
             btnSearch = new Button();
             btnReload = new Button();
+            btnExport = new Button();
+            pnlPager = new Panel();
+            btnPrevPage = new Button();
+            lblPage = new Label();
+            btnNextPage = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvProducts).BeginInit();
             grpInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudCostPrice).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudSalePrice).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudStock).BeginInit();
             pnlSearch.SuspendLayout();
+            pnlPager.SuspendLayout();
             SuspendLayout();
             // 
             // dgvProducts
@@ -73,6 +81,8 @@ namespace ST_FE.Forms
             // 
             grpInfo.Controls.Add(lblCode);
             grpInfo.Controls.Add(txtCode);
+            grpInfo.Controls.Add(lblBarcode);
+            grpInfo.Controls.Add(txtBarcode);
             grpInfo.Controls.Add(lblName);
             grpInfo.Controls.Add(txtName);
             grpInfo.Controls.Add(lblCategory);
@@ -117,171 +127,188 @@ namespace ST_FE.Forms
             txtCode.Size = new Size(230, 25);
             txtCode.TabIndex = 1;
             // 
+            // lblBarcode
+            // 
+            lblBarcode.AutoSize = true;
+            lblBarcode.Location = new Point(20, 70);
+            lblBarcode.Name = "lblBarcode";
+            lblBarcode.TabIndex = 2;
+            lblBarcode.Text = "Mã vạch";
+            // 
+            // txtBarcode
+            // 
+            txtBarcode.Location = new Point(130, 67);
+            txtBarcode.MaxLength = 14;
+            txtBarcode.Name = "txtBarcode";
+            txtBarcode.PlaceholderText = "EAN-13, để trống nếu chưa có";
+            txtBarcode.Size = new Size(230, 25);
+            txtBarcode.TabIndex = 3;
+            // 
             // lblName
             // 
             lblName.AutoSize = true;
-            lblName.Location = new Point(20, 70);
+            lblName.Location = new Point(20, 107);
             lblName.Name = "lblName";
-            lblName.TabIndex = 2;
+            lblName.TabIndex = 4;
             lblName.Text = "Tên hàng *";
             // 
             // txtName
             // 
-            txtName.Location = new Point(130, 67);
+            txtName.Location = new Point(130, 104);
             txtName.MaxLength = 150;
             txtName.Name = "txtName";
             txtName.Size = new Size(230, 25);
-            txtName.TabIndex = 3;
+            txtName.TabIndex = 5;
             // 
             // lblCategory
             // 
             lblCategory.AutoSize = true;
-            lblCategory.Location = new Point(20, 107);
+            lblCategory.Location = new Point(20, 144);
             lblCategory.Name = "lblCategory";
-            lblCategory.TabIndex = 4;
+            lblCategory.TabIndex = 6;
             lblCategory.Text = "Nhóm hàng *";
             // 
             // cboCategory
             // 
             cboCategory.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboCategory.Location = new Point(130, 104);
+            cboCategory.Location = new Point(130, 141);
             cboCategory.Name = "cboCategory";
             cboCategory.Size = new Size(230, 25);
-            cboCategory.TabIndex = 5;
+            cboCategory.TabIndex = 7;
             // 
             // lblUnit
             // 
             lblUnit.AutoSize = true;
-            lblUnit.Location = new Point(20, 144);
+            lblUnit.Location = new Point(20, 181);
             lblUnit.Name = "lblUnit";
-            lblUnit.TabIndex = 6;
+            lblUnit.TabIndex = 8;
             lblUnit.Text = "Đơn vị tính *";
             // 
             // txtUnit
             // 
-            txtUnit.Location = new Point(130, 141);
+            txtUnit.Location = new Point(130, 178);
             txtUnit.MaxLength = 20;
             txtUnit.Name = "txtUnit";
             txtUnit.Size = new Size(230, 25);
-            txtUnit.TabIndex = 7;
+            txtUnit.TabIndex = 9;
             // 
             // lblCostPrice
             // 
             lblCostPrice.AutoSize = true;
-            lblCostPrice.Location = new Point(20, 181);
+            lblCostPrice.Location = new Point(20, 218);
             lblCostPrice.Name = "lblCostPrice";
-            lblCostPrice.TabIndex = 8;
+            lblCostPrice.TabIndex = 10;
             lblCostPrice.Text = "Giá nhập (đ)";
             // 
             // nudCostPrice
             // 
             nudCostPrice.Increment = new decimal(new int[] { 500, 0, 0, 0 });
-            nudCostPrice.Location = new Point(130, 178);
+            nudCostPrice.Location = new Point(130, 215);
             nudCostPrice.Maximum = new decimal(new int[] { 1000000000, 0, 0, 0 });
             nudCostPrice.Name = "nudCostPrice";
             nudCostPrice.Size = new Size(230, 25);
-            nudCostPrice.TabIndex = 9;
+            nudCostPrice.TabIndex = 11;
             nudCostPrice.ThousandsSeparator = true;
             // 
             // lblSalePrice
             // 
             lblSalePrice.AutoSize = true;
-            lblSalePrice.Location = new Point(20, 218);
+            lblSalePrice.Location = new Point(20, 255);
             lblSalePrice.Name = "lblSalePrice";
-            lblSalePrice.TabIndex = 10;
+            lblSalePrice.TabIndex = 12;
             lblSalePrice.Text = "Giá bán (đ) *";
             // 
             // nudSalePrice
             // 
             nudSalePrice.Increment = new decimal(new int[] { 500, 0, 0, 0 });
-            nudSalePrice.Location = new Point(130, 215);
+            nudSalePrice.Location = new Point(130, 252);
             nudSalePrice.Maximum = new decimal(new int[] { 1000000000, 0, 0, 0 });
             nudSalePrice.Name = "nudSalePrice";
             nudSalePrice.Size = new Size(230, 25);
-            nudSalePrice.TabIndex = 11;
+            nudSalePrice.TabIndex = 13;
             nudSalePrice.ThousandsSeparator = true;
             // 
             // lblStock
             // 
             lblStock.AutoSize = true;
-            lblStock.Location = new Point(20, 255);
+            lblStock.Location = new Point(20, 292);
             lblStock.Name = "lblStock";
-            lblStock.TabIndex = 12;
+            lblStock.TabIndex = 14;
             lblStock.Text = "Tồn kho";
             // 
             // nudStock
             // 
-            nudStock.Location = new Point(130, 252);
+            nudStock.Location = new Point(130, 289);
             nudStock.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
             nudStock.Name = "nudStock";
             nudStock.Size = new Size(230, 25);
-            nudStock.TabIndex = 13;
+            nudStock.TabIndex = 15;
             nudStock.ThousandsSeparator = true;
             // 
             // lblDescription
             // 
             lblDescription.AutoSize = true;
-            lblDescription.Location = new Point(20, 292);
+            lblDescription.Location = new Point(20, 329);
             lblDescription.Name = "lblDescription";
-            lblDescription.TabIndex = 14;
+            lblDescription.TabIndex = 16;
             lblDescription.Text = "Mô tả";
             // 
             // txtDescription
             // 
-            txtDescription.Location = new Point(130, 289);
+            txtDescription.Location = new Point(130, 326);
             txtDescription.MaxLength = 255;
             txtDescription.Multiline = true;
             txtDescription.Name = "txtDescription";
-            txtDescription.Size = new Size(230, 60);
-            txtDescription.TabIndex = 15;
+            txtDescription.Size = new Size(230, 44);
+            txtDescription.TabIndex = 17;
             // 
             // chkActive
             // 
             chkActive.CheckState = CheckState.Checked;
             chkActive.Checked = true;
-            chkActive.Location = new Point(130, 361);
+            chkActive.Location = new Point(130, 378);
             chkActive.Name = "chkActive";
             chkActive.Size = new Size(230, 25);
-            chkActive.TabIndex = 16;
+            chkActive.TabIndex = 18;
             chkActive.Text = "Đang kinh doanh";
             chkActive.UseVisualStyleBackColor = true;
             // 
             // btnAdd
             // 
-            btnAdd.Location = new Point(20, 404);
+            btnAdd.Location = new Point(20, 414);
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(165, 38);
-            btnAdd.TabIndex = 17;
-            btnAdd.Text = "➕ Thêm";
+            btnAdd.TabIndex = 19;
+            btnAdd.Text = "✚ Thêm";
             btnAdd.UseVisualStyleBackColor = true;
             btnAdd.Click += btnAdd_Click;
             // 
             // btnUpdate
             // 
-            btnUpdate.Location = new Point(195, 404);
+            btnUpdate.Location = new Point(195, 414);
             btnUpdate.Name = "btnUpdate";
             btnUpdate.Size = new Size(165, 38);
-            btnUpdate.TabIndex = 18;
+            btnUpdate.TabIndex = 20;
             btnUpdate.Text = "✎ Cập nhật";
             btnUpdate.UseVisualStyleBackColor = true;
             btnUpdate.Click += btnUpdate_Click;
             // 
             // btnDelete
             // 
-            btnDelete.Location = new Point(20, 450);
+            btnDelete.Location = new Point(20, 458);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(165, 38);
-            btnDelete.TabIndex = 19;
+            btnDelete.TabIndex = 21;
             btnDelete.Text = "✖ Xóa";
             btnDelete.UseVisualStyleBackColor = true;
             btnDelete.Click += btnDelete_Click;
             // 
             // btnClear
             // 
-            btnClear.Location = new Point(195, 450);
+            btnClear.Location = new Point(195, 458);
             btnClear.Name = "btnClear";
             btnClear.Size = new Size(165, 38);
-            btnClear.TabIndex = 20;
+            btnClear.TabIndex = 22;
             btnClear.Text = "Làm mới";
             btnClear.UseVisualStyleBackColor = true;
             btnClear.Click += btnClear_Click;
@@ -293,6 +320,7 @@ namespace ST_FE.Forms
             pnlSearch.Controls.Add(chkShowInactive);
             pnlSearch.Controls.Add(btnSearch);
             pnlSearch.Controls.Add(btnReload);
+            pnlSearch.Controls.Add(btnExport);
             pnlSearch.Dock = DockStyle.Top;
             pnlSearch.Location = new Point(12, 12);
             pnlSearch.Name = "pnlSearch";
@@ -332,7 +360,7 @@ namespace ST_FE.Forms
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(110, 32);
             btnSearch.TabIndex = 3;
-            btnSearch.Text = "🔍 Tìm kiếm";
+            btnSearch.Text = "⚲ Tìm kiếm";
             btnSearch.UseVisualStyleBackColor = true;
             btnSearch.Click += btnSearch_Click;
             // 
@@ -346,6 +374,56 @@ namespace ST_FE.Forms
             btnReload.UseVisualStyleBackColor = true;
             btnReload.Click += btnReload_Click;
             // 
+            // btnExport
+            // 
+            btnExport.Location = new Point(860, 5);
+            btnExport.Name = "btnExport";
+            btnExport.Size = new Size(130, 32);
+            btnExport.TabIndex = 5;
+            btnExport.Text = "▤ Xuất Excel";
+            btnExport.UseVisualStyleBackColor = true;
+            btnExport.Click += btnExport_Click;
+            // 
+            // pnlPager
+            // 
+            pnlPager.Controls.Add(btnPrevPage);
+            pnlPager.Controls.Add(lblPage);
+            pnlPager.Controls.Add(btnNextPage);
+            pnlPager.Dock = DockStyle.Bottom;
+            pnlPager.Location = new Point(12, 588);
+            pnlPager.Name = "pnlPager";
+            pnlPager.Size = new Size(646, 40);
+            pnlPager.TabIndex = 3;
+            // 
+            // btnPrevPage
+            // 
+            btnPrevPage.Location = new Point(0, 6);
+            btnPrevPage.Name = "btnPrevPage";
+            btnPrevPage.Size = new Size(90, 30);
+            btnPrevPage.TabIndex = 0;
+            btnPrevPage.Text = "◀ Trước";
+            btnPrevPage.UseVisualStyleBackColor = true;
+            btnPrevPage.Click += btnPrevPage_Click;
+            // 
+            // lblPage
+            // 
+            lblPage.Location = new Point(96, 6);
+            lblPage.Name = "lblPage";
+            lblPage.Size = new Size(300, 30);
+            lblPage.TabIndex = 1;
+            lblPage.Text = "Trang 1/1";
+            lblPage.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // btnNextPage
+            // 
+            btnNextPage.Location = new Point(402, 6);
+            btnNextPage.Name = "btnNextPage";
+            btnNextPage.Size = new Size(90, 30);
+            btnNextPage.TabIndex = 2;
+            btnNextPage.Text = "Sau ▶";
+            btnNextPage.UseVisualStyleBackColor = true;
+            btnNextPage.Click += btnNextPage_Click;
+            // 
             // FormProducts
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -353,6 +431,7 @@ namespace ST_FE.Forms
             BackColor = Color.FromArgb(249, 250, 251);
             ClientSize = new Size(1050, 640);
             Controls.Add(dgvProducts);
+            Controls.Add(pnlPager);
             Controls.Add(grpInfo);
             Controls.Add(pnlSearch);
             Font = new Font("Segoe UI", 10F);
@@ -368,6 +447,7 @@ namespace ST_FE.Forms
             grpInfo.PerformLayout();
             pnlSearch.ResumeLayout(false);
             pnlSearch.PerformLayout();
+            pnlPager.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -378,6 +458,8 @@ namespace ST_FE.Forms
         private GroupBox grpInfo;
         private Label lblCode;
         private TextBox txtCode;
+        private Label lblBarcode;
+        private TextBox txtBarcode;
         private Label lblName;
         private TextBox txtName;
         private Label lblCategory;
@@ -403,5 +485,10 @@ namespace ST_FE.Forms
         private CheckBox chkShowInactive;
         private Button btnSearch;
         private Button btnReload;
+        private Button btnExport;
+        private Panel pnlPager;
+        private Button btnPrevPage;
+        private Label lblPage;
+        private Button btnNextPage;
     }
 }

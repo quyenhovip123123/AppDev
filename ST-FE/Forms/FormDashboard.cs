@@ -1,15 +1,13 @@
 using ST_FE.Helpers;
 using ST_FE.Models;
 using ST_FE.Services;
-using System.Drawing.Drawing2D;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ST_FE.Forms
 {
     // Tổng quan doanh thu (chỉ Admin)
     public partial class FormDashboard : Form
     {
-        private DashboardDto? _data;
-
         public FormDashboard()
         {
             InitializeComponent();
@@ -25,9 +23,7 @@ namespace ST_FE.Forms
                 new GridColumn(nameof(ProductDto.StockQuantity), "Tồn", 50, "N0"));
             UiHelper.StyleButton(btnView, UiHelper.Primary);
 
-            // Vẽ biểu đồ mượt, không nháy
-            typeof(Panel).GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-                .SetValue(pnlChart, true);
+            SetupChart();
 
             dtpFrom.Value = DateTime.Today.AddDays(-6);
             dtpTo.Value = DateTime.Today;
@@ -35,7 +31,61 @@ namespace ST_FE.Forms
 
         private async void FormDashboard_Load(object sender, EventArgs e)
         {
+            await LoadSummaryAsync();
             await LoadDataAsync();
+        }
+
+        // 4 thẻ KPI: GET /api/reports/dashboard-summary (luôn tính theo hôm nay / tháng này, không phụ thuộc bộ lọc)
+        private async Task LoadSummaryAsync()
+        {
+            try
+            {
+                var kpi = await ApiClient.GetAsync<DashboardSummaryDto>("reports/dashboard-summary");
+                lblTodayRevenue.Text = UiHelper.Money(kpi.TodayRevenue);
+                lblTodayOrders.Text = kpi.TodayOrderCount.ToString("N0");
+                lblNewCustomers.Text = kpi.NewCustomerCount.ToString("N0");
+                lblLowStock.Text = kpi.LowStockCount.ToString("N0");
+            }
+            catch (Exception ex)
+            {
+                UiHelper.ShowError(ex);
+            }
+        }
+
+        // Biểu đồ cột (System.Windows.Forms.DataVisualization.Charting.Chart, ChartType = Column)
+        private void SetupChart()
+        {
+            chartRevenue.ChartAreas.Clear();
+            chartRevenue.Series.Clear();
+            chartRevenue.Titles.Clear();
+            chartRevenue.Legends.Clear();
+
+            var area = new ChartArea("Revenue");
+            area.AxisX.MajorGrid.Enabled = false;
+            area.AxisX.Interval = 1;
+            area.AxisX.LabelStyle.Format = "dd/MM";
+            area.AxisX.LabelStyle.Font = new Font("Segoe UI", 8F);
+            area.AxisY.MajorGrid.LineColor = Color.FromArgb(229, 231, 235);
+            area.AxisY.LabelStyle.Format = "#,##0";
+            area.AxisY.LabelStyle.Font = new Font("Segoe UI", 8F);
+            chartRevenue.ChartAreas.Add(area);
+
+            var series = new Series("Doanh thu")
+            {
+                ChartArea = area.Name,
+                ChartType = SeriesChartType.Column,
+                XValueType = ChartValueType.Date,
+                Color = UiHelper.Primary,
+                IsValueShownAsLabel = true,
+                LabelFormat = "#,##0",
+                Font = new Font("Segoe UI", 8F),
+                ToolTip = "#VALX{dd/MM/yyyy}: #VALY{#,##0} đ"
+            };
+            series["PointWidth"] = "0.6";
+            chartRevenue.Series.Add(series);
+
+            chartRevenue.Titles.Add(new Title("Doanh thu theo ngày", Docking.Top, new Font("Segoe UI", 11F, FontStyle.Bold), Color.Black));
+            chartRevenue.Titles.Add(new Title("", Docking.Top, new Font("Segoe UI", 9F), Color.DimGray));
         }
 
         private async Task LoadDataAsync()
@@ -47,14 +97,22 @@ namespace ST_FE.Forms
             }
             try
             {
-                _data = await ApiClient.GetAsync<DashboardDto>($"reports/dashboard?from={dtpFrom.Value:yyyy-MM-dd}&to={dtpTo.Value:yyyy-MM-dd}");
-                lblRevenue.Text = UiHelper.Money(_data.Revenue);
-                lblProfit.Text = UiHelper.Money(_data.Profit);
-                lblOrders.Text = _data.OrderCount.ToString("N0");
-                lblImport.Text = UiHelper.Money(_data.ImportTotal);
-                dgvTopProducts.DataSource = _data.TopProducts;
-                dgvLowStock.DataSource = _data.LowStockProducts;
-                pnlChart.Invalidate();
+                var data = await ApiClient.GetAsync<DashboardDto>($"reports/dashboard?from={dtpFrom.Value:yyyy-MM-dd}&to={dtpTo.Value:yyyy-MM-dd}");
+                dgvTopProducts.DataSource = data.TopProducts;
+                dgvLowStock.DataSource = data.LowStockProducts;
+
+                // Dữ liệu cột lấy từ Stored Procedure sp_DailyRevenue (qua API)
+                var series = chartRevenue.Series[0];
+                series.Points.Clear();
+                foreach (var d in data.DailyRevenue)
+                    series.Points.AddXY(d.Date, d.Revenue);
+                series.IsValueShownAsLabel = data.DailyRevenue.Count <= 15;
+                chartRevenue.ChartAreas[0].AxisX.Interval = Math.Max(1, Math.Ceiling(data.DailyRevenue.Count / 15.0));
+
+                chartRevenue.Titles[0].Text = $"Doanh thu theo ngày ({data.From:dd/MM/yyyy} – {data.To:dd/MM/yyyy})";
+                chartRevenue.Titles[1].Text =
+                    $"Tổng doanh thu: {UiHelper.Money(data.Revenue)}  •  Lợi nhuận gộp: {UiHelper.Money(data.Profit)}  •  " +
+                    $"{data.OrderCount:N0} hóa đơn  •  Tiền nhập hàng: {UiHelper.Money(data.ImportTotal)}";
             }
             catch (Exception ex)
             {
@@ -62,7 +120,11 @@ namespace ST_FE.Forms
             }
         }
 
-        private async void btnView_Click(object sender, EventArgs e) => await LoadDataAsync();
+        private async void btnView_Click(object sender, EventArgs e)
+        {
+            await LoadSummaryAsync();
+            await LoadDataAsync();
+        }
 
         private async void btnToday_Click(object sender, EventArgs e)
         {
@@ -82,56 +144,6 @@ namespace ST_FE.Forms
             dtpFrom.Value = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             dtpTo.Value = DateTime.Today;
             await LoadDataAsync();
-        }
-
-        private void pnlChart_Resize(object sender, EventArgs e) => pnlChart.Invalidate();
-
-        // Biểu đồ cột doanh thu theo ngày (tự vẽ bằng GDI+)
-        private void pnlChart_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            using var titleFont = new Font("Segoe UI", 11, FontStyle.Bold);
-            using var smallFont = new Font("Segoe UI", 8);
-            g.DrawString("Doanh thu theo ngày", titleFont, Brushes.Black, 12, 8);
-
-            var days = _data?.DailyRevenue;
-            if (days == null || days.Count == 0) return;
-
-            var area = new RectangleF(60, 40, pnlChart.Width - 80, pnlChart.Height - 75);
-            var max = Math.Max(days.Max(d => d.Revenue), 1);
-
-            // Trục và đường kẻ ngang
-            using var gridPen = new Pen(Color.FromArgb(229, 231, 235));
-            for (int i = 0; i <= 4; i++)
-            {
-                var y = area.Bottom - area.Height * i / 4;
-                g.DrawLine(gridPen, area.Left, y, area.Right, y);
-                var label = (max * i / 4 / 1000).ToString("N0") + "k";
-                g.DrawString(label, smallFont, Brushes.Gray, new RectangleF(0, y - 7, area.Left - 6, 14),
-                    new StringFormat { Alignment = StringAlignment.Far });
-            }
-
-            var slot = area.Width / days.Count;
-            var barWidth = Math.Min(slot * 0.6f, 50);
-            var labelEvery = Math.Max(1, (int)Math.Ceiling(days.Count / (area.Width / 45)));
-            using var barBrush = new SolidBrush(UiHelper.Primary);
-            var center = new StringFormat { Alignment = StringAlignment.Center };
-
-            for (int i = 0; i < days.Count; i++)
-            {
-                var d = days[i];
-                var h = (float)(d.Revenue / max) * area.Height;
-                var x = area.Left + slot * i + (slot - barWidth) / 2;
-                if (h > 0) g.FillRectangle(barBrush, x, area.Bottom - h, barWidth, h);
-
-                if (i % labelEvery == 0)
-                    g.DrawString(d.Date.ToString("dd/MM"), smallFont, Brushes.Gray,
-                        new RectangleF(area.Left + slot * i, area.Bottom + 4, slot, 14), center);
-                if (d.Revenue > 0 && days.Count <= 15)
-                    g.DrawString((d.Revenue / 1000).ToString("N0") + "k", smallFont, Brushes.Black,
-                        new RectangleF(area.Left + slot * i, area.Bottom - h - 16, slot, 14), center);
-            }
         }
     }
 }

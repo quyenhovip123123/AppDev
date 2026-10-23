@@ -163,7 +163,7 @@ namespace ST_FE.Forms
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(150, 38);
             btnAdd.TabIndex = 9;
-            btnAdd.Text = "➕ Thêm";
+            btnAdd.Text = "✚ Thêm";
             btnAdd.UseVisualStyleBackColor = true;
             btnAdd.Click += btnAdd_Click;
             // 
@@ -183,7 +183,7 @@ namespace ST_FE.Forms
             btnResetPassword.Name = "btnResetPassword";
             btnResetPassword.Size = new Size(150, 38);
             btnResetPassword.TabIndex = 11;
-            btnResetPassword.Text = "🔑 Đặt lại MK";
+            btnResetPassword.Text = "↻ Đặt lại MK";
             btnResetPassword.UseVisualStyleBackColor = true;
             btnResetPassword.Click += btnResetPassword_Click;
             // 
@@ -193,7 +193,7 @@ namespace ST_FE.Forms
             btnUnlock.Name = "btnUnlock";
             btnUnlock.Size = new Size(150, 38);
             btnUnlock.TabIndex = 12;
-            btnUnlock.Text = "🔓 Mở khóa";
+            btnUnlock.Text = "✓ Mở khóa";
             btnUnlock.UseVisualStyleBackColor = true;
             btnUnlock.Click += btnUnlock_Click;
             // 

@@ -8,6 +8,7 @@ namespace ST_FE.Forms
     // Màn hình bán hàng tại quầy (POS)
     public partial class FormSales : Form
     {
+        private const decimal PointValue = 1_000;   // 1 điểm đổi được 1.000đ
         private List<ProductDto> _products = new();
         private readonly BindingList<CartItem> _cart = new();
         private CustomerDto? _customer;
@@ -62,26 +63,38 @@ namespace ST_FE.Forms
             dgvProducts.DataSource = string.IsNullOrEmpty(k)
                 ? _products
                 : _products.Where(p => p.ProductName.Contains(k, StringComparison.OrdinalIgnoreCase)
-                                    || p.ProductCode.Contains(k, StringComparison.OrdinalIgnoreCase)).ToList();
+                                    || p.ProductCode.Contains(k, StringComparison.OrdinalIgnoreCase)
+                                    || (p.Barcode?.Contains(k) ?? false)).ToList();
         }
 
-        // Enter: nếu gõ/quét đúng mã hàng thì thêm luôn vào giỏ, ngược lại lọc danh sách
-        private void txtProductSearch_KeyDown(object sender, KeyEventArgs e)
+        // Enter (hoặc máy quét mã vạch gửi Enter): tra mã vạch EAN hoặc mã hàng qua API GET products/by-code/{code} (ADO.NET phía server).
+        // Đúng mã -> thêm luôn vào giỏ (cộng dồn nếu đã có), không phải mã -> lọc danh sách theo tên
+        private async void txtProductSearch_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
             e.SuppressKeyPress = true;
 
             var code = txtProductSearch.Text.Trim();
-            var exact = _products.FirstOrDefault(p => p.ProductCode.Equals(code, StringComparison.OrdinalIgnoreCase));
-            if (exact != null)
+            if (code.Length == 0 || code.Contains(' '))
             {
-                AddToCart(exact, (int)nudQuantity.Value);
+                FilterProducts();
+                return;
+            }
+
+            try
+            {
+                var product = await ApiClient.GetAsync<ProductDto>($"products/by-code/{Uri.EscapeDataString(code)}");
+                AddToCart(product, (int)nudQuantity.Value);
                 txtProductSearch.Clear();
                 FilterProducts();
             }
-            else
+            catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 FilterProducts();
+            }
+            catch (Exception ex)
+            {
+                UiHelper.ShowError(ex);
             }
         }
 
@@ -211,12 +224,19 @@ namespace ST_FE.Forms
             lblCustomerInfo.Text = customer == null
                 ? "Khách lẻ"
                 : $"✔ {customer.FullName} — {customer.Phone} — Điểm tích lũy: {customer.Points:N0}";
+
+            // Chỉ khách thân thiết có điểm mới được đổi điểm trừ tiền
+            nudRedeemPoints.Value = 0;
+            nudRedeemPoints.Maximum = customer?.Points ?? 0;
+            nudRedeemPoints.Enabled = customer is { Points: > 0 };
+            UpdateTotals();
         }
 
         // ===== Thanh toán =====
 
         private decimal SubTotal => _cart.Sum(c => c.LineTotal);
-        private decimal Total => Math.Max(0, SubTotal - nudDiscount.Value);
+        private decimal PointsDiscount => nudRedeemPoints.Value * PointValue;
+        private decimal Total => Math.Max(0, SubTotal - nudDiscount.Value - PointsDiscount);
 
         private void UpdateTotals()
         {
@@ -225,7 +245,7 @@ namespace ST_FE.Forms
             var change = nudCustomerPaid.Value - Total;
             lblChange.Text = change >= 0 ? UiHelper.Money(change) : "Chưa đủ: " + UiHelper.Money(-change);
             lblChange.ForeColor = change >= 0 ? UiHelper.Success : UiHelper.Danger;
-            lblCartTitle.Text = $"🛒 Giỏ hàng ({_cart.Sum(c => c.Quantity)} sản phẩm)";
+            lblCartTitle.Text = $"▣ Giỏ hàng ({_cart.Sum(c => c.Quantity)} sản phẩm)";
         }
 
         private void Totals_ValueChanged(object sender, EventArgs e) => UpdateTotals();
@@ -251,9 +271,9 @@ namespace ST_FE.Forms
                 UiHelper.ShowWarning("Giỏ hàng đang trống!");
                 return;
             }
-            if (nudDiscount.Value > SubTotal)
+            if (nudDiscount.Value + PointsDiscount > SubTotal)
             {
-                UiHelper.ShowWarning("Giảm giá không được lớn hơn tổng tiền hàng!");
+                UiHelper.ShowWarning("Tổng giảm giá và tiền đổi điểm không được lớn hơn tổng tiền hàng!");
                 return;
             }
             if (nudCustomerPaid.Value < Total)
@@ -266,11 +286,12 @@ namespace ST_FE.Forms
 
             await UiHelper.RunBusyAsync(this, async () =>
             {
-                // POST /api/orders — server kiểm tra tồn kho, trừ kho và cộng điểm trong 1 transaction
+                // POST /api/orders — server lưu hóa đơn, trừ kho, trừ/cộng điểm trong 1 SqlTransaction
                 var order = await ApiClient.PostAsync<OrderDto>("orders", new
                 {
                     CustomerId = _customer?.CustomerId,
                     Discount = nudDiscount.Value,
+                    RedeemPoints = (int)nudRedeemPoints.Value,
                     CustomerPaid = nudCustomerPaid.Value,
                     Note = txtNote.Text.Trim(),
                     Items = _cart.Select(c => new { c.ProductId, c.Quantity }).ToList()

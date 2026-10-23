@@ -8,10 +8,10 @@ namespace ST_FE.Services
     // Lớp duy nhất gọi Web API. Các Form chỉ việc gọi GetAsync/PostAsync/PutAsync/DeleteAsync
     public static class ApiClient
     {
-        // Địa chỉ ST-BE (profile "https" trong launchSettings.json).
-        // Có thể đổi bằng biến môi trường SUNNY_API_URL, VD: http://192.168.1.10:5124/api/
+        // Địa chỉ ST-BE (cổng HTTP của launchSettings.json, không phụ thuộc chứng chỉ dev).
+        // Có thể đổi bằng biến môi trường SUNNY_API_URL, VD: https://localhost:7123/api/
         public static readonly string BaseUrl =
-            Environment.GetEnvironmentVariable("SUNNY_API_URL") ?? "https://localhost:7123/api/";
+            Environment.GetEnvironmentVariable("SUNNY_API_URL") ?? "http://localhost:5124/api/";
 
         private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -159,9 +159,9 @@ namespace ST_FE.Services
             {
                 return await send();
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
-                throw new ApiException(null, $"Không kết nối được tới máy chủ ({BaseUrl}).\nHãy kiểm tra ST-BE đã được chạy chưa.");
+                throw new ApiException(null, $"Không kết nối được tới máy chủ ({BaseUrl}).\nHãy kiểm tra ST-BE đã được chạy chưa.\n\nChi tiết: {ex.GetBaseException().Message}");
             }
             catch (TaskCanceledException)
             {

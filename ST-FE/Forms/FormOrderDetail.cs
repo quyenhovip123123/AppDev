@@ -38,6 +38,7 @@ namespace ST_FE.Forms
             lblTotals.Text =
                 $"Tổng tiền hàng: {UiHelper.Money(_order.SubTotal)}\n" +
                 $"Giảm giá: {UiHelper.Money(_order.Discount)}\n" +
+                (_order.PointsUsed > 0 ? $"Dùng {_order.PointsUsed:N0} điểm: -{UiHelper.Money(_order.PointsDiscount)}\n" : "") +
                 $"KHÁCH CẦN TRẢ: {UiHelper.Money(_order.TotalAmount)}\n" +
                 $"Khách đưa: {UiHelper.Money(_order.CustomerPaid)}  •  Tiền thừa: {UiHelper.Money(_order.ChangeAmount)}";
             dgvDetails.DataSource = _order.Details;
@@ -94,6 +95,7 @@ namespace ST_FE.Forms
             }
             Line("Tổng tiền hàng:", _order.SubTotal, normal);
             Line("Giảm giá:", _order.Discount, normal);
+            if (_order.PointsUsed > 0) Line($"Dùng {_order.PointsUsed:N0} điểm:", _order.PointsDiscount, normal);
             Line("Khách cần trả:", _order.TotalAmount, bold);
             Line("Khách đưa:", _order.CustomerPaid, normal);
             Line("Tiền thừa:", _order.ChangeAmount, normal);

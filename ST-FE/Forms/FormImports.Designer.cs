@@ -175,7 +175,7 @@ namespace ST_FE.Forms
             btnAddLine.Name = "btnAddLine";
             btnAddLine.Size = new Size(130, 32);
             btnAddLine.TabIndex = 6;
-            btnAddLine.Text = "➕ Thêm dòng";
+            btnAddLine.Text = "✚ Thêm dòng";
             btnAddLine.UseVisualStyleBackColor = true;
             btnAddLine.Click += btnAddLine_Click;
             // 
@@ -249,7 +249,7 @@ namespace ST_FE.Forms
             btnSaveImport.Name = "btnSaveImport";
             btnSaveImport.Size = new Size(200, 44);
             btnSaveImport.TabIndex = 2;
-            btnSaveImport.Text = "💾 LƯU PHIẾU NHẬP";
+            btnSaveImport.Text = "✔ LƯU PHIẾU NHẬP";
             btnSaveImport.UseVisualStyleBackColor = true;
             btnSaveImport.Click += btnSaveImport_Click;
             // 
@@ -334,7 +334,7 @@ namespace ST_FE.Forms
             btnLoadHistory.Name = "btnLoadHistory";
             btnLoadHistory.Size = new Size(100, 32);
             btnLoadHistory.TabIndex = 4;
-            btnLoadHistory.Text = "🔍 Lọc";
+            btnLoadHistory.Text = "⚲ Lọc";
             btnLoadHistory.UseVisualStyleBackColor = true;
             btnLoadHistory.Click += btnLoadHistory_Click;
             // 

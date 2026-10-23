@@ -128,7 +128,7 @@ namespace ST_FE.Forms
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(150, 38);
             btnAdd.TabIndex = 6;
-            btnAdd.Text = "➕ Thêm";
+            btnAdd.Text = "✚ Thêm";
             btnAdd.UseVisualStyleBackColor = true;
             btnAdd.Click += btnAdd_Click;
             // 
@@ -189,7 +189,7 @@ namespace ST_FE.Forms
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(110, 32);
             btnSearch.TabIndex = 1;
-            btnSearch.Text = "🔍 Tìm kiếm";
+            btnSearch.Text = "⚲ Tìm kiếm";
             btnSearch.UseVisualStyleBackColor = true;
             btnSearch.Click += btnSearch_Click;
             // 

@@ -97,7 +97,7 @@ namespace ST_FE.Forms
             btnDashboard.Padding = new Padding(18, 0, 0, 0);
             btnDashboard.Size = new Size(230, 44);
             btnDashboard.TabIndex = 0;
-            btnDashboard.Text = "📊  Tổng quan";
+            btnDashboard.Text = "▦  Tổng quan";
             btnDashboard.TextAlign = ContentAlignment.MiddleLeft;
             btnDashboard.UseVisualStyleBackColor = false;
             btnDashboard.Click += btnDashboard_Click;
@@ -114,7 +114,7 @@ namespace ST_FE.Forms
             btnSales.Padding = new Padding(18, 0, 0, 0);
             btnSales.Size = new Size(230, 44);
             btnSales.TabIndex = 1;
-            btnSales.Text = "🛒  Bán hàng";
+            btnSales.Text = "₫  Bán hàng";
             btnSales.TextAlign = ContentAlignment.MiddleLeft;
             btnSales.UseVisualStyleBackColor = false;
             btnSales.Click += btnSales_Click;
@@ -131,7 +131,7 @@ namespace ST_FE.Forms
             btnOrders.Padding = new Padding(18, 0, 0, 0);
             btnOrders.Size = new Size(230, 44);
             btnOrders.TabIndex = 2;
-            btnOrders.Text = "🧾  Hóa đơn";
+            btnOrders.Text = "☰  Hóa đơn";
             btnOrders.TextAlign = ContentAlignment.MiddleLeft;
             btnOrders.UseVisualStyleBackColor = false;
             btnOrders.Click += btnOrders_Click;
@@ -148,7 +148,7 @@ namespace ST_FE.Forms
             btnProducts.Padding = new Padding(18, 0, 0, 0);
             btnProducts.Size = new Size(230, 44);
             btnProducts.TabIndex = 3;
-            btnProducts.Text = "📦  Mặt hàng";
+            btnProducts.Text = "▣  Mặt hàng";
             btnProducts.TextAlign = ContentAlignment.MiddleLeft;
             btnProducts.UseVisualStyleBackColor = false;
             btnProducts.Click += btnProducts_Click;
@@ -165,7 +165,7 @@ namespace ST_FE.Forms
             btnCategories.Padding = new Padding(18, 0, 0, 0);
             btnCategories.Size = new Size(230, 44);
             btnCategories.TabIndex = 4;
-            btnCategories.Text = "🗂  Nhóm hàng";
+            btnCategories.Text = "▤  Nhóm hàng";
             btnCategories.TextAlign = ContentAlignment.MiddleLeft;
             btnCategories.UseVisualStyleBackColor = false;
             btnCategories.Click += btnCategories_Click;
@@ -182,7 +182,7 @@ namespace ST_FE.Forms
             btnCustomers.Padding = new Padding(18, 0, 0, 0);
             btnCustomers.Size = new Size(230, 44);
             btnCustomers.TabIndex = 5;
-            btnCustomers.Text = "👥  Khách hàng";
+            btnCustomers.Text = "☺  Khách hàng";
             btnCustomers.TextAlign = ContentAlignment.MiddleLeft;
             btnCustomers.UseVisualStyleBackColor = false;
             btnCustomers.Click += btnCustomers_Click;
@@ -199,7 +199,7 @@ namespace ST_FE.Forms
             btnImports.Padding = new Padding(18, 0, 0, 0);
             btnImports.Size = new Size(230, 44);
             btnImports.TabIndex = 6;
-            btnImports.Text = "📥  Nhập kho";
+            btnImports.Text = "⇩  Nhập kho";
             btnImports.TextAlign = ContentAlignment.MiddleLeft;
             btnImports.UseVisualStyleBackColor = false;
             btnImports.Click += btnImports_Click;
@@ -216,7 +216,7 @@ namespace ST_FE.Forms
             btnUsers.Padding = new Padding(18, 0, 0, 0);
             btnUsers.Size = new Size(230, 44);
             btnUsers.TabIndex = 7;
-            btnUsers.Text = "🔐  Nhân viên";
+            btnUsers.Text = "☻  Nhân viên";
             btnUsers.TextAlign = ContentAlignment.MiddleLeft;
             btnUsers.UseVisualStyleBackColor = false;
             btnUsers.Click += btnUsers_Click;
@@ -245,7 +245,7 @@ namespace ST_FE.Forms
             btnTokenInfo.Padding = new Padding(18, 0, 0, 0);
             btnTokenInfo.Size = new Size(230, 40);
             btnTokenInfo.TabIndex = 0;
-            btnTokenInfo.Text = "🔑  Phiên đăng nhập (JWT)";
+            btnTokenInfo.Text = "✦  Phiên đăng nhập (JWT)";
             btnTokenInfo.TextAlign = ContentAlignment.MiddleLeft;
             btnTokenInfo.UseVisualStyleBackColor = false;
             btnTokenInfo.Click += btnTokenInfo_Click;
@@ -262,7 +262,7 @@ namespace ST_FE.Forms
             btnChangePassword.Padding = new Padding(18, 0, 0, 0);
             btnChangePassword.Size = new Size(230, 40);
             btnChangePassword.TabIndex = 1;
-            btnChangePassword.Text = "🔒  Đổi mật khẩu";
+            btnChangePassword.Text = "⚙  Đổi mật khẩu";
             btnChangePassword.TextAlign = ContentAlignment.MiddleLeft;
             btnChangePassword.UseVisualStyleBackColor = false;
             btnChangePassword.Click += btnChangePassword_Click;
