@@ -8,10 +8,10 @@ using ST_BE.Services;
 
 namespace ST_BE.Controllers
 {
-    // Phiếu nhập kho — chỉ Admin
+    // Phiếu nhập kho — Admin và nhân viên kiểm kho
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.AdminOrWarehouse)]
     public class ImportsController : ControllerBase
     {
         private readonly AppDbContext _db;
@@ -29,6 +29,21 @@ namespace ST_BE.Controllers
             if (to.HasValue) query = query.Where(r => r.CreatedAt < to.Value.Date.AddDays(1));
             var list = await query.OrderByDescending(r => r.CreatedAt).ToListAsync();
             return Ok(list.Select(ToDto));
+        }
+
+        // GET /api/imports/paged?from=...&to=...&page=1&pageSize=20 — phân trang phía máy chủ
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] DateTime? from, [FromQuery] DateTime? to,
+            [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            if (!Paging.IsValid(page, pageSize)) return BadRequest(Paging.InvalidMessage);
+
+            var query = Query();
+            if (from.HasValue) query = query.Where(r => r.CreatedAt >= from.Value.Date);
+            if (to.HasValue) query = query.Where(r => r.CreatedAt < to.Value.Date.AddDays(1));
+            return Ok(await query.AsSplitQuery()
+                                 .OrderByDescending(r => r.CreatedAt).ThenByDescending(r => r.ImportReceiptId)
+                                 .ToPagedAsync(page, pageSize, ToDto));
         }
 
         [HttpGet("{id}")]

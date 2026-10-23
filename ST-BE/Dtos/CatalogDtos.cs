@@ -70,6 +70,13 @@ namespace ST_BE.Dtos
         public bool IsActive { get; set; } = true;
     }
 
+    // Kiểm kê: số lượng tồn kho thực tế
+    public class StockAdjustRequest
+    {
+        [Range(0, int.MaxValue, ErrorMessage = "Tồn kho không hợp lệ")]
+        public int StockQuantity { get; set; }
+    }
+
     public class CustomerDto
     {
         public int CustomerId { get; set; }

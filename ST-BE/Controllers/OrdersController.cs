@@ -8,10 +8,11 @@ using ST_BE.Services;
 
 namespace ST_BE.Controllers
 {
-    // Hóa đơn bán hàng. Nhân viên chỉ xem được hóa đơn do chính mình lập (lọc theo claim UserId trong JWT)
+    // Hóa đơn bán hàng. Nhân viên chỉ xem được hóa đơn do chính mình lập (lọc theo claim UserId trong JWT).
+    // Nhân viên kiểm kho không bán hàng nên không truy cập được
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = Roles.AdminOrStaff)]
     public class OrdersController : ControllerBase
     {
         private readonly AppDbContext _db;
@@ -45,6 +46,47 @@ namespace ST_BE.Controllers
                                     || o.CustomerName.Contains(k, StringComparison.OrdinalIgnoreCase));
             }
             return Ok(list.ToList());
+        }
+
+        // GET /api/orders/paged?from=...&to=...&keyword=...&page=1&pageSize=20 — phân trang phía máy chủ
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] string? keyword,
+            [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            if (!Paging.IsValid(page, pageSize)) return BadRequest(Paging.InvalidMessage);
+
+            IQueryable<Order> query = _db.Orders.AsNoTracking();
+            if (!User.IsAdmin())
+            {
+                var userId = User.GetUserId();
+                query = query.Where(o => o.UserId == userId);
+            }
+            if (from.HasValue) query = query.Where(o => o.CreatedAt >= from.Value.Date);
+            if (to.HasValue) query = query.Where(o => o.CreatedAt < to.Value.Date.AddDays(1));
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                var k = keyword.Trim();
+                var matchWalkIn = "Khách lẻ".Contains(k, StringComparison.OrdinalIgnoreCase);   // hóa đơn không gắn khách hàng
+                query = query.Where(o => o.OrderCode.Contains(k) || o.Customer!.FullName.Contains(k)
+                                      || (matchWalkIn && o.CustomerId == null));
+            }
+
+            var completed = query.Where(o => o.Status != OrderStatus.Cancelled);
+            var completedCount = await completed.CountAsync();
+            var revenue = await completed.SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            var paged = await query.Include(o => o.User)
+                                   .Include(o => o.Customer)
+                                   .Include(o => o.Details).ThenInclude(d => d.Product)
+                                   .AsSplitQuery()
+                                   .OrderByDescending(o => o.CreatedAt).ThenByDescending(o => o.OrderId)
+                                   .ToPagedAsync(page, pageSize, ToDto);
+
+            return Ok(new OrderPagedResult
+            {
+                Items = paged.Items, Page = page, PageSize = pageSize, TotalCount = paged.TotalCount,
+                CompletedCount = completedCount, Revenue = revenue
+            });
         }
 
         [HttpGet("{id}")]

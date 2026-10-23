@@ -49,7 +49,7 @@ namespace ST_FE.Forms
             sb.AppendLine("// Giải thích:");
             sb.AppendLine("//   nameid       = mã người dùng (UserId)");
             sb.AppendLine("//   unique_name  = tên đăng nhập");
-            sb.AppendLine("//   role         = quyền: Admin (Quản lý) / Staff (Nhân viên)");
+            sb.AppendLine("//   role         = quyền: Admin (Quản lý) / Staff (Bán hàng) / Warehouse (Kiểm kho)");
             sb.AppendLine("//   stamp        = SecurityStamp, đổi khi đổi mật khẩu/khóa tài khoản -> token cũ mất hiệu lực");
             sb.AppendLine("//   jti          = mã định danh duy nhất của token");
             sb.AppendLine("//   iss / aud    = bên phát hành / bên được phép dùng token");

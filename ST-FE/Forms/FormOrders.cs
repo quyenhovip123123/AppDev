@@ -7,6 +7,8 @@ namespace ST_FE.Forms
     // Danh sách hóa đơn. Nhân viên chỉ thấy hóa đơn của mình (server lọc theo UserId trong JWT)
     public partial class FormOrders : Form
     {
+        private readonly PagerBar _pager = new("hóa đơn");
+
         public FormOrders()
         {
             InitializeComponent();
@@ -34,23 +36,33 @@ namespace ST_FE.Forms
 
             dtpFrom.Value = DateTime.Today.AddDays(-30);
             dtpTo.Value = DateTime.Today;
+
+            _pager.AttachBelow(dgvOrders).PageChanged += async (_, _) => await LoadDataAsync();
         }
+
+        private string FilterQuery() =>
+            $"from={dtpFrom.Value:yyyy-MM-dd}&to={dtpTo.Value:yyyy-MM-dd}&keyword={Uri.EscapeDataString(txtKeyword.Text.Trim())}";
 
         private async void FormOrders_Load(object sender, EventArgs e)
         {
             await LoadDataAsync();
         }
 
+        // GET /api/orders/paged?from=...&to=...&keyword=...&page=...&pageSize=... (phân trang phía máy chủ)
         private async Task LoadDataAsync()
         {
             try
             {
-                var url = $"orders?from={dtpFrom.Value:yyyy-MM-dd}&to={dtpTo.Value:yyyy-MM-dd}&keyword={Uri.EscapeDataString(txtKeyword.Text.Trim())}";
-                var orders = await ApiClient.GetAsync<List<OrderDto>>(url);
-                dgvOrders.DataSource = orders;
+                var result = await ApiClient.GetAsync<OrderPagedResult>($"orders/paged?{FilterQuery()}&{_pager.Query}");
+                if (!_pager.Apply(result))
+                {
+                    await LoadDataAsync();
+                    return;
+                }
+                dgvOrders.DataSource = result.Items;
 
-                var completed = orders.Where(o => o.Status != "Cancelled").ToList();
-                lblSummary.Text = $"{completed.Count} hóa đơn hoàn thành  •  Doanh thu: {UiHelper.Money(completed.Sum(o => o.TotalAmount))}";
+                // Tổng hợp do server tính trên toàn bộ kết quả lọc, không chỉ trang đang xem
+                lblSummary.Text = $"{result.CompletedCount} hóa đơn hoàn thành  •  Doanh thu: {UiHelper.Money(result.Revenue)}";
             }
             catch (Exception ex)
             {
@@ -58,16 +70,17 @@ namespace ST_FE.Forms
             }
         }
 
-        // Xuất danh sách hóa đơn (doanh thu) đang hiển thị ra tệp CSV mở bằng Excel
-        private void btnExport_Click(object sender, EventArgs e)
+        // Xuất toàn bộ hóa đơn theo bộ lọc (không chỉ trang đang xem) ra tệp CSV mở bằng Excel
+        private async void btnExport_Click(object sender, EventArgs e)
         {
-            if (dgvOrders.DataSource is not List<OrderDto> orders || orders.Count == 0)
+            await UiHelper.RunBusyAsync(this, async () =>
             {
-                UiHelper.ShowWarning("Không có hóa đơn nào để xuất!");
-                return;
-            }
-            try
-            {
+                var orders = await ApiClient.GetAsync<List<OrderDto>>($"orders?{FilterQuery()}");
+                if (orders.Count == 0)
+                {
+                    UiHelper.ShowWarning("Không có hóa đơn nào để xuất!");
+                    return;
+                }
                 var saved = CsvExporter.SaveWithDialog(this, $"DoanhThu_{dtpFrom.Value:yyyyMMdd}-{dtpTo.Value:yyyyMMdd}.csv", orders,
                     new("Mã hóa đơn", o => o.OrderCode),
                     new("Ngày lập", o => o.CreatedAt),
@@ -80,14 +93,14 @@ namespace ST_FE.Forms
                     new("Thành tiền", o => o.TotalAmount),
                     new("Trạng thái", o => o.StatusText));
                 if (saved) UiHelper.ShowInfo($"Đã xuất {orders.Count} hóa đơn ra tệp CSV.");
-            }
-            catch (Exception ex)
-            {
-                UiHelper.ShowError(ex);
-            }
+            });
         }
 
-        private async void btnSearch_Click(object sender, EventArgs e) => await LoadDataAsync();
+        private async void btnSearch_Click(object sender, EventArgs e)
+        {
+            _pager.Reset();
+            await LoadDataAsync();
+        }
 
         private void txtKeyword_KeyDown(object sender, KeyEventArgs e)
         {

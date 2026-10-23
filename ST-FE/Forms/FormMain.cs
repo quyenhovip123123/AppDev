@@ -22,7 +22,10 @@ namespace ST_FE.Forms
             // Phân quyền giao diện theo claim "role" trong JWT.
             // (Chỉ để tiện dụng — việc chặn thật sự nằm ở [Authorize(Roles = "Admin")] phía server)
             btnDashboard.Visible = Session.IsAdmin;
-            btnImports.Visible = Session.IsAdmin;
+            btnSales.Visible = Session.CanSell;
+            btnOrders.Visible = Session.CanSell;
+            btnCustomers.Visible = Session.CanSell;
+            btnImports.Visible = Session.CanManageStock;
             btnUsers.Visible = Session.IsAdmin;
 
             ApiClient.SessionExpired += ApiClient_SessionExpired;
@@ -32,6 +35,8 @@ namespace ST_FE.Forms
         {
             if (Session.IsAdmin)
                 btnDashboard.PerformClick();
+            else if (Session.IsWarehouse)
+                btnProducts.PerformClick();
             else
                 btnSales.PerformClick();
         }

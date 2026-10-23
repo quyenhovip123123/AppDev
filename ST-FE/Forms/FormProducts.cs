@@ -27,8 +27,8 @@ namespace ST_FE.Forms
                 new(nameof(ProductDto.StockQuantity), "Tồn kho", 60, "N0"),
                 new(nameof(ProductDto.IsActive), "Đang KD", 55, IsCheckBox: true),
             };
-            // Giá nhập chỉ hiển thị cho Quản lý
-            if (Session.IsAdmin) columns.Insert(5, new(nameof(ProductDto.CostPrice), "Giá nhập", 80, "N0"));
+            // Giá nhập chỉ hiển thị cho Quản lý và Kiểm kho
+            if (Session.CanManageStock) columns.Insert(5, new(nameof(ProductDto.CostPrice), "Giá nhập", 80, "N0"));
             UiHelper.SetupGrid(dgvProducts, columns.ToArray());
             dgvProducts.CellFormatting += dgvProducts_CellFormatting;
 
@@ -37,8 +37,17 @@ namespace ST_FE.Forms
             UiHelper.StyleButton(btnDelete, UiHelper.Danger);
             UiHelper.StyleButton(btnExport, UiHelper.Success);
 
-            // Nhân viên chỉ được xem: các nút vẫn bấm được nhưng sẽ hiện hộp thoại "Không đủ quyền hạn"
-            if (!Session.IsAdmin)
+            // Kiểm kho: chỉ được kiểm kê (sửa số tồn kho) và xuất Excel; Thêm/Xóa vẫn thuộc Quản lý
+            if (Session.IsWarehouse)
+            {
+                foreach (var btn in new[] { btnAdd, btnDelete }) UiHelper.StyleLocked(btn);
+                btnUpdate.Text = "✎ Cập nhật tồn kho";
+                txtCode.ReadOnly = txtBarcode.ReadOnly = txtName.ReadOnly = txtUnit.ReadOnly = txtDescription.ReadOnly = true;
+                cboCategory.Enabled = nudCostPrice.Enabled = nudSalePrice.Enabled = chkActive.Enabled = false;
+                grpInfo.Text += " (kiểm kê tồn kho)";
+            }
+            // Nhân viên bán hàng chỉ được xem: các nút vẫn bấm được nhưng sẽ hiện hộp thoại "Không đủ quyền hạn"
+            else if (!Session.IsAdmin)
             {
                 foreach (var btn in new[] { btnAdd, btnUpdate, btnDelete, btnExport }) UiHelper.StyleLocked(btn);
                 lblCostPrice.Visible = nudCostPrice.Visible = false;
@@ -144,7 +153,7 @@ namespace ST_FE.Forms
         // Xuất toàn bộ mặt hàng (không chỉ trang đang xem) kèm tồn kho ra tệp CSV mở bằng Excel
         private async void btnExport_Click(object sender, EventArgs e)
         {
-            if (!UiHelper.RequireAdmin("xuất danh mục hàng (có giá nhập)")) return;
+            if (!UiHelper.Require(Session.CanManageStock, "xuất danh mục hàng (có giá nhập)")) return;
             await UiHelper.RunBusyAsync(this, async () =>
             {
                 var all = await ApiClient.GetAsync<List<ProductDto>>($"products?{FilterQuery()}");
@@ -246,10 +255,15 @@ namespace ST_FE.Forms
 
         private async void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (!UiHelper.RequireAdmin("cập nhật mặt hàng")) return;
+            if (!UiHelper.Require(Session.CanManageStock, "cập nhật mặt hàng")) return;
             if (_selectedId == null)
             {
                 UiHelper.ShowWarning("Vui lòng chọn mặt hàng cần sửa!");
+                return;
+            }
+            if (Session.IsWarehouse)
+            {
+                await UpdateStockAsync();
                 return;
             }
             if (!ValidateInput()) return;
@@ -258,6 +272,18 @@ namespace ST_FE.Forms
             {
                 await ApiClient.PutAsync($"products/{_selectedId}", BuildRequest());
                 UiHelper.ShowInfo("Cập nhật thành công!");
+                await LoadDataAsync();
+            });
+        }
+
+        // Kiểm kê: PUT /api/products/{id}/stock — chỉ ghi lại số lượng tồn kho thực tế
+        private async Task UpdateStockAsync()
+        {
+            if (!UiHelper.Confirm($"Cập nhật tồn kho \"{txtName.Text}\" thành {nudStock.Value:N0}?")) return;
+            await UiHelper.RunBusyAsync(this, async () =>
+            {
+                var message = await ApiClient.PutAsync($"products/{_selectedId}/stock", new { StockQuantity = (int)nudStock.Value });
+                UiHelper.ShowInfo(message ?? "Đã cập nhật tồn kho");
                 await LoadDataAsync();
             });
         }

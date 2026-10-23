@@ -11,18 +11,21 @@ Hệ thống quản lý **Cửa hàng Văn phòng phẩm Sunny** theo mô hình 
 
 ## 1. Chức năng
 
-| Chức năng | Quản lý (Admin) | Nhân viên (Staff) |
-|---|:-:|:-:|
-| Đăng nhập / đăng xuất / đổi mật khẩu / xem phiên JWT | ✅ | ✅ |
-| Bán hàng (POS): quét mã vạch EAN-13 (hoặc gõ mã hàng), giỏ hàng, giảm giá, **đổi điểm trừ tiền**, tiền thừa, tích điểm, in hóa đơn | ✅ | ✅ |
-| Xem hóa đơn | Tất cả | Chỉ hóa đơn mình lập |
-| Hủy hóa đơn (hoàn kho, trừ điểm đã cộng, hoàn điểm đã dùng) | ✅ | ❌ |
-| Mặt hàng (mã hàng + mã vạch riêng, phân trang, tô đỏ hàng tồn ≤ 10), Nhóm hàng | Thêm/sửa/xóa | Chỉ xem (không thấy giá nhập) |
-| Xuất Excel (CSV): danh mục hàng kèm tồn kho / danh sách hóa đơn | ✅ | Chỉ hóa đơn |
-| Khách hàng | Thêm/sửa/xóa | Thêm/sửa |
-| Nhập kho (cộng tồn, cập nhật giá nhập) | ✅ | ❌ |
-| Tổng quan: 4 thẻ KPI, biểu đồ cột doanh thu theo ngày, top 5 bán chạy, hàng sắp hết | ✅ | ❌ |
-| Quản lý tài khoản nhân viên (tạo, khóa, đổi quyền, đặt lại mật khẩu, mở khóa) | ✅ | ❌ |
+| Chức năng | Quản lý (Admin) | Bán hàng (Staff) | Kiểm kho (Warehouse) |
+|---|:-:|:-:|:-:|
+| Đăng nhập / đăng xuất / đổi mật khẩu / xem phiên JWT | ✅ | ✅ | ✅ |
+| Bán hàng (POS): quét mã vạch EAN-13 (hoặc gõ mã hàng), giỏ hàng, giảm giá, **đổi điểm trừ tiền**, tiền thừa, tích điểm, in hóa đơn | ✅ | ✅ | ❌ |
+| Xem hóa đơn | Tất cả | Chỉ hóa đơn mình lập | ❌ |
+| Hủy hóa đơn (hoàn kho, trừ điểm đã cộng, hoàn điểm đã dùng) | ✅ | ❌ | ❌ |
+| Mặt hàng (mã hàng + mã vạch riêng, tô đỏ hàng tồn ≤ 10) | Thêm/sửa/xóa | Chỉ xem (không thấy giá nhập) | Xem giá nhập + kiểm kê (sửa số tồn) |
+| Nhóm hàng | Thêm/sửa/xóa | Chỉ xem | Chỉ xem |
+| Xuất Excel (CSV): danh mục hàng kèm tồn kho / danh sách hóa đơn | ✅ | Chỉ hóa đơn | Chỉ danh mục hàng |
+| Khách hàng | Thêm/sửa/xóa | Thêm/sửa | ❌ |
+| Nhập kho (cộng tồn, cập nhật giá nhập) | ✅ | ❌ | ✅ |
+| Tổng quan: 4 thẻ KPI, biểu đồ cột doanh thu theo ngày, top 5 bán chạy, hàng sắp hết | ✅ | ❌ | ❌ |
+| Quản lý tài khoản nhân viên (tạo, khóa, đổi quyền, đặt lại mật khẩu, mở khóa) | ✅ | ❌ | ❌ |
+
+Mọi danh sách (Mặt hàng, Nhóm hàng, Khách hàng, Hóa đơn, Lịch sử nhập kho, Tài khoản) đều **phân trang phía máy chủ** (15 dòng/trang).
 
 ---
 
@@ -52,7 +55,7 @@ Hệ thống quản lý **Cửa hàng Văn phòng phẩm Sunny** theo mô hình 
 - **Xoay vòng refresh token (rotation)**: mỗi lần refresh, token cũ bị thu hồi và cấp token mới. Nếu một token đã thu hồi bị **dùng lại** (dấu hiệu bị đánh cắp), server thu hồi **toàn bộ** phiên của tài khoản đó.
 - **SecurityStamp**: khi đổi mật khẩu, khóa tài khoản, đổi quyền hoặc đặt lại mật khẩu, stamp được tạo mới, nên mọi access token cũ **mất hiệu lực ngay** mà không phải chờ hết hạn.
 - **Mật khẩu** được băm bằng BCrypt. Đăng nhập sai 5 lần thì tài khoản bị khóa 5 phút (cấu hình trong `LoginLockout`). Thông báo lỗi không cho biết sai tên hay sai mật khẩu.
-- **Phân quyền** bằng `[Authorize]` và `[Authorize(Roles = "Admin")]`. Nhân viên chỉ xem được hóa đơn của mình (lọc theo claim UserId) và không xem được giá nhập.
+- **Phân quyền** 3 vai trò (Admin / Staff / Warehouse) bằng `[Authorize]` và `[Authorize(Roles = "...")]`. Nhân viên chỉ xem được hóa đơn của mình (lọc theo claim UserId) và không xem được giá nhập.
 - Lỗi 401/403 luôn trả về JSON `{ "message": "..." }` bằng tiếng Việt.
 
 **Phía client (`ST-FE`)**
@@ -136,6 +139,7 @@ dotnet --list-runtimes   # runtime dùng để chạy (ST-BE cần Microsoft.Asp
 | `nhanvien` | `nhanvien123` | Nhân viên bán hàng |
 | `tuanpm`, `landt` | `nhanvien123` | Nhân viên bán hàng |
 | `baohg` | `nhanvien123` | Nhân viên (đã khóa — minh họa tài khoản bị vô hiệu hóa) |
+| `kiemkho` | `nhanvien123` | Nhân viên kiểm kho |
 
 ### Tùy chọn
 - **Đổi địa chỉ API của client:** đặt biến môi trường `SUNNY_API_URL` (VD `https://localhost:7123/api/`). Mặc định là `http://localhost:5124/api/` (ở môi trường Development, BE không ép chuyển sang HTTPS nên không cần tin cậy chứng chỉ dev).
@@ -150,18 +154,19 @@ dotnet --list-runtimes   # runtime dùng để chạy (ST-BE cần Microsoft.Asp
 |---|---|---|
 | POST | `/api/auth/login` · `/api/auth/refresh` | Không cần token |
 | POST | `/api/auth/logout` · `/api/auth/change-password` · GET `/api/auth/me` | Đã đăng nhập |
-| GET | `/api/categories` · `/api/categories/{id}` · `/api/categories/search?keyword=` | Đã đăng nhập |
+| GET | `/api/categories` · `/api/categories/paged?keyword=&page=&pageSize=` · `/api/categories/{id}` · `/api/categories/search?keyword=` | Đã đăng nhập |
 | POST/PUT/DELETE | `/api/categories` | Admin |
 | GET | `/api/products?keyword=&categoryId=&includeInactive=` · `/api/products/paged?page=&pageSize=` · `/api/products/by-barcode/{barcode}` = `/api/products/by-code/{code}` (ADO.NET, khớp mã vạch hoặc mã hàng) | Đã đăng nhập |
 | POST/PUT/DELETE | `/api/products` | Admin |
-| GET/POST/PUT | `/api/customers` | Đã đăng nhập |
+| PUT | `/api/products/{id}/stock` (kiểm kê: sửa số tồn) | Admin, Warehouse |
+| GET/POST/PUT | `/api/customers` · GET `/api/customers/paged?keyword=&page=&pageSize=` | Admin, Staff |
 | DELETE | `/api/customers/{id}` | Admin |
-| GET/POST | `/api/orders?from=&to=&keyword=` (POST chạy trong 1 `SqlTransaction`, có `redeemPoints`) | Đã đăng nhập (Staff chỉ thấy của mình) |
+| GET/POST | `/api/orders?from=&to=&keyword=` · GET `/api/orders/paged?...&page=&pageSize=` (POST chạy trong 1 `SqlTransaction`, có `redeemPoints`) | Admin, Staff (Staff chỉ thấy của mình) |
 | POST | `/api/orders/{id}/cancel` | Admin |
-| GET/POST | `/api/imports` | Admin |
+| GET/POST | `/api/imports` · GET `/api/imports/paged?from=&to=&page=&pageSize=` | Admin, Warehouse |
 | GET | `/api/reports/dashboard?from=&to=` · `/api/reports/dashboard-summary` · `/api/reports/top-products?top=5` | Admin |
 | GET | `/api/reports/daily-revenue?from=&to=` (SP `sp_DailyRevenue`) · `/api/reports/shift-revenue?from=&to=&userId=` (SP `sp_RevenueByShift`) | Admin |
-| GET/POST/PUT | `/api/users` · POST `/api/users/{id}/reset-password` · `/api/users/{id}/unlock` | Admin |
+| GET/POST/PUT | `/api/users` · GET `/api/users/paged?page=&pageSize=` · POST `/api/users/{id}/reset-password` · `/api/users/{id}/unlock` | Admin |
 
 ---
 

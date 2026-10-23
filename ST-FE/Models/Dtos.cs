@@ -29,7 +29,7 @@ namespace ST_FE.Models
         public bool IsLockedOut { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public string RoleText => Role == "Admin" ? "Quản lý" : "Nhân viên bán hàng";
+        public string RoleText => Services.Session.RoleText(Role);
     }
 
     public class CategoryDto
@@ -182,5 +182,11 @@ namespace ST_FE.Models
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
         public decimal LineTotal => UnitPrice * Quantity;
+    }
+
+    public class OrderPagedResult : PagedResult<OrderDto>
+    {
+        public int CompletedCount { get; set; }
+        public decimal Revenue { get; set; }
     }
 }

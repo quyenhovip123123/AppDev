@@ -6,6 +6,7 @@ namespace ST_FE.Forms
 {
     public partial class FormCustomers : Form
     {
+        private readonly PagerBar _pager = new("khách hàng");
         private int? _selectedId;
 
         public FormCustomers()
@@ -24,6 +25,8 @@ namespace ST_FE.Forms
 
             // Nhân viên được thêm/sửa khách hàng nhưng không được xóa (bấm Xóa sẽ hiện hộp thoại báo không đủ quyền)
             if (!Session.IsAdmin) UiHelper.StyleLocked(btnDelete);
+
+            _pager.AttachBelow(dgvCustomers).PageChanged += async (_, _) => await LoadDataAsync();
         }
 
         private async void FormCustomers_Load(object sender, EventArgs e)
@@ -31,12 +34,19 @@ namespace ST_FE.Forms
             await LoadDataAsync();
         }
 
+        // GET /api/customers/paged?keyword=...&page=...&pageSize=... (phân trang phía máy chủ)
         private async Task LoadDataAsync()
         {
             try
             {
-                var url = $"customers?keyword={Uri.EscapeDataString(txtKeyword.Text.Trim())}";
-                dgvCustomers.DataSource = await ApiClient.GetAsync<List<CustomerDto>>(url);
+                var url = $"customers/paged?keyword={Uri.EscapeDataString(txtKeyword.Text.Trim())}&{_pager.Query}";
+                var result = await ApiClient.GetAsync<PagedResult<CustomerDto>>(url);
+                if (!_pager.Apply(result))
+                {
+                    await LoadDataAsync();
+                    return;
+                }
+                dgvCustomers.DataSource = result.Items;
             }
             catch (Exception ex)
             {
@@ -44,11 +54,16 @@ namespace ST_FE.Forms
             }
         }
 
-        private async void btnSearch_Click(object sender, EventArgs e) => await LoadDataAsync();
+        private async void btnSearch_Click(object sender, EventArgs e)
+        {
+            _pager.Reset();
+            await LoadDataAsync();
+        }
 
         private async void btnReload_Click(object sender, EventArgs e)
         {
             txtKeyword.Clear();
+            _pager.Reset();
             await LoadDataAsync();
         }
 

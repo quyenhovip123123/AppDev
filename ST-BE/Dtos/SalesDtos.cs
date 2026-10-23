@@ -166,4 +166,11 @@ namespace ST_BE.Dtos
         public int TotalCount { get; set; }
         public int TotalPages => PageSize == 0 ? 0 : (int)Math.Ceiling(TotalCount / (double)PageSize);
     }
+
+    // Trang hóa đơn kèm tổng hợp trên TOÀN BỘ kết quả lọc (không chỉ trang đang xem)
+    public class OrderPagedResult : PagedResult<OrderDto>
+    {
+        public int CompletedCount { get; set; }
+        public decimal Revenue { get; set; }
+    }
 }

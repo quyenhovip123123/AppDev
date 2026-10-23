@@ -5,10 +5,11 @@ using System.ComponentModel;
 
 namespace ST_FE.Forms
 {
-    // Nhập kho (chỉ Admin)
+    // Nhập kho (Quản lý + Nhân viên kiểm kho)
     public partial class FormImports : Form
     {
         private readonly BindingList<CartItem> _lines = new();
+        private readonly PagerBar _pager = new("phiếu nhập");
 
         public FormImports()
         {
@@ -44,6 +45,8 @@ namespace ST_FE.Forms
 
             dtpFrom.Value = DateTime.Today.AddDays(-30);
             dtpTo.Value = DateTime.Today;
+
+            _pager.AttachBelow(dgvReceipts).PageChanged += async (_, _) => await LoadHistoryAsync();
         }
 
         private async void FormImports_Load(object sender, EventArgs e)
@@ -148,18 +151,26 @@ namespace ST_FE.Forms
                 txtImportNote.Clear();
                 UpdateTotal();
                 await LoadProductsAsync();
+                _pager.Reset();   // phiếu mới nhất nằm ở trang 1
                 await LoadHistoryAsync();
             });
         }
 
         // ===== Lịch sử =====
 
+        // GET /api/imports/paged?from=...&to=...&page=...&pageSize=... (phân trang phía máy chủ)
         private async Task LoadHistoryAsync()
         {
             try
             {
-                dgvReceipts.DataSource = await ApiClient.GetAsync<List<ImportReceiptDto>>(
-                    $"imports?from={dtpFrom.Value:yyyy-MM-dd}&to={dtpTo.Value:yyyy-MM-dd}");
+                var result = await ApiClient.GetAsync<PagedResult<ImportReceiptDto>>(
+                    $"imports/paged?from={dtpFrom.Value:yyyy-MM-dd}&to={dtpTo.Value:yyyy-MM-dd}&{_pager.Query}");
+                if (!_pager.Apply(result))
+                {
+                    await LoadHistoryAsync();
+                    return;
+                }
+                dgvReceipts.DataSource = result.Items;
             }
             catch (Exception ex)
             {
@@ -167,7 +178,11 @@ namespace ST_FE.Forms
             }
         }
 
-        private async void btnLoadHistory_Click(object sender, EventArgs e) => await LoadHistoryAsync();
+        private async void btnLoadHistory_Click(object sender, EventArgs e)
+        {
+            _pager.Reset();
+            await LoadHistoryAsync();
+        }
 
         private void dgvReceipts_SelectionChanged(object sender, EventArgs e)
         {

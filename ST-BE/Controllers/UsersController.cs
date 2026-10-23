@@ -28,11 +28,19 @@ namespace ST_BE.Controllers
             return Ok(users.Select(ToDto));
         }
 
+        // GET /api/users/paged?page=1&pageSize=20 — phân trang phía máy chủ
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            if (!Paging.IsValid(page, pageSize)) return BadRequest(Paging.InvalidMessage);
+            return Ok(await _db.Users.AsNoTracking().OrderBy(u => u.UserId).ToPagedAsync(page, pageSize, ToDto));
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
             if (!Roles.IsValid(request.Role))
-                return BadRequest(new { message = "Quyền không hợp lệ (Admin hoặc Staff)" });
+                return BadRequest(new { message = "Quyền không hợp lệ (Admin, Staff hoặc Warehouse)" });
 
             var username = request.Username.Trim().ToLower();
             if (await _db.Users.AnyAsync(u => u.Username == username))
@@ -54,7 +62,7 @@ namespace ST_BE.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserRequest request)
         {
             if (!Roles.IsValid(request.Role))
-                return BadRequest(new { message = "Quyền không hợp lệ (Admin hoặc Staff)" });
+                return BadRequest(new { message = "Quyền không hợp lệ (Admin, Staff hoặc Warehouse)" });
 
             var user = await _db.Users.FindAsync(id);
             if (user == null) return NotFound(new { message = "Không tìm thấy tài khoản" });

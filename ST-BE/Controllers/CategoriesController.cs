@@ -45,6 +45,21 @@ namespace ST_BE.Controllers
             return Ok(result);
         }
 
+        // GET /api/categories/paged?keyword=bút&page=1&pageSize=20 — phân trang phía máy chủ
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            if (!Paging.IsValid(page, pageSize)) return BadRequest(Paging.InvalidMessage);
+
+            var query = Query();
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                var k = keyword.Trim();
+                query = query.Where(c => c.CategoryName.Contains(k));
+            }
+            return Ok(await query.ToPagedAsync(page, pageSize, c => c));
+        }
+
         [HttpPost]
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Create([FromBody] CategoryRequest request)

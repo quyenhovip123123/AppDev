@@ -151,6 +151,20 @@ namespace ST_BE.Controllers
             return NoContent();
         }
 
+        // PUT /api/products/5/stock — kiểm kê: cập nhật số lượng tồn kho thực tế đếm được (Admin + Kiểm kho)
+        [HttpPut("{id}/stock")]
+        [Authorize(Roles = Roles.AdminOrWarehouse)]
+        public async Task<IActionResult> UpdateStock(int id, [FromBody] StockAdjustRequest request)
+        {
+            var product = await _db.Products.FindAsync(id);
+            if (product == null) return NotFound(new { message = "Không tìm thấy mặt hàng" });
+
+            var old = product.StockQuantity;
+            product.StockQuantity = request.StockQuantity;
+            await _db.SaveChangesAsync();
+            return Ok(new { message = $"Đã cập nhật tồn kho {product.ProductCode}: {old} -> {request.StockQuantity}" });
+        }
+
         // Mặt hàng đã phát sinh giao dịch thì chỉ chuyển sang "Ngừng kinh doanh" để giữ lịch sử
         [HttpDelete("{id}")]
         [Authorize(Roles = Roles.Admin)]
@@ -173,10 +187,10 @@ namespace ST_BE.Controllers
             return Ok(new { message = "Đã xóa mặt hàng" });
         }
 
-        // Giá nhập là thông tin kinh doanh nhạy cảm: chỉ Admin được xem
+        // Giá nhập là thông tin kinh doanh nhạy cảm: chỉ Admin và nhân viên kiểm kho được xem
         private void HideCostForStaff(ProductDto p)
         {
-            if (!User.IsAdmin()) p.CostPrice = 0;
+            if (!User.CanSeeCostPrice()) p.CostPrice = 0;
         }
 
         // Chuỗi rỗng -> null để chỉ mục UNIQUE (lọc IS NOT NULL) cho phép nhiều mặt hàng chưa có mã vạch

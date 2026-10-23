@@ -7,6 +7,7 @@ namespace ST_FE.Forms
     // Quản lý tài khoản nhân viên (chỉ Admin mới mở được form này)
     public partial class FormUsers : Form
     {
+        private readonly PagerBar _pager = new("tài khoản");
         private UserDto? _selected;
 
         public FormUsers()
@@ -30,8 +31,11 @@ namespace ST_FE.Forms
             cboRole.DataSource = new List<KeyValuePair<string, string>>
             {
                 new("Staff", "Nhân viên bán hàng"),
+                new("Warehouse", "Nhân viên kiểm kho"),
                 new("Admin", "Quản lý")
             };
+
+            _pager.AttachBelow(dgvUsers).PageChanged += async (_, _) => await LoadDataAsync();
         }
 
         private async void FormUsers_Load(object sender, EventArgs e)
@@ -39,11 +43,18 @@ namespace ST_FE.Forms
             await LoadDataAsync();
         }
 
+        // GET /api/users/paged?page=...&pageSize=... (phân trang phía máy chủ)
         private async Task LoadDataAsync()
         {
             try
             {
-                dgvUsers.DataSource = await ApiClient.GetAsync<List<UserDto>>("users");
+                var result = await ApiClient.GetAsync<PagedResult<UserDto>>($"users/paged?{_pager.Query}");
+                if (!_pager.Apply(result))
+                {
+                    await LoadDataAsync();
+                    return;
+                }
+                dgvUsers.DataSource = result.Items;
             }
             catch (Exception ex)
             {

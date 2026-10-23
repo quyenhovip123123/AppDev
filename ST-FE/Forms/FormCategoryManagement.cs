@@ -6,6 +6,8 @@ namespace ST_FE.Forms
 {
     public partial class FormCategoryManagement : Form
     {
+        private readonly PagerBar _pager = new("nhóm hàng");
+
         public FormCategoryManagement()
         {
             InitializeComponent();
@@ -26,6 +28,8 @@ namespace ST_FE.Forms
                 txtCategoryName.ReadOnly = txtDescription.ReadOnly = true;
                 grpInfo.Text += " (chỉ xem)";
             }
+
+            _pager.AttachBelow(dgvCategories).PageChanged += async (_, _) => await LoadDataAsync();
         }
 
         private async void FormCategoryManagement_Load(object sender, EventArgs e)
@@ -33,13 +37,19 @@ namespace ST_FE.Forms
             await LoadDataAsync();
         }
 
-        // GET /api/categories hoặc /api/categories/search?keyword=...
-        private async Task LoadDataAsync(string? keyword = null)
+        // GET /api/categories/paged?keyword=...&page=...&pageSize=... (phân trang phía máy chủ)
+        private async Task LoadDataAsync()
         {
             try
             {
-                var url = string.IsNullOrEmpty(keyword) ? "categories" : $"categories/search?keyword={Uri.EscapeDataString(keyword)}";
-                dgvCategories.DataSource = await ApiClient.GetAsync<List<CategoryDto>>(url);
+                var url = $"categories/paged?keyword={Uri.EscapeDataString(txtKeyword.Text.Trim())}&{_pager.Query}";
+                var result = await ApiClient.GetAsync<PagedResult<CategoryDto>>(url);
+                if (!_pager.Apply(result))
+                {
+                    await LoadDataAsync();
+                    return;
+                }
+                dgvCategories.DataSource = result.Items;
             }
             catch (Exception ex)
             {
@@ -49,12 +59,14 @@ namespace ST_FE.Forms
 
         private async void btnSearch_Click(object sender, EventArgs e)
         {
-            await LoadDataAsync(txtKeyword.Text.Trim());
+            _pager.Reset();
+            await LoadDataAsync();
         }
 
         private async void btnReload_Click(object sender, EventArgs e)
         {
             txtKeyword.Clear();
+            _pager.Reset();
             await LoadDataAsync();
         }
 

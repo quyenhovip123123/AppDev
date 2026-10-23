@@ -45,9 +45,11 @@ namespace ST_FE.Helpers
 
         // Kiểm tra quyền trước khi thao tác: Nhân viên bấm chức năng của Quản lý -> hiện hộp thoại chặn lại.
         // (Chỉ để thông báo thân thiện — việc chặn thật sự vẫn nằm ở [Authorize(Roles = "Admin")] phía server)
-        public static bool RequireAdmin(string action)
+        public static bool RequireAdmin(string action) => Require(Session.IsAdmin, action);
+
+        public static bool Require(bool allowed, string action)
         {
-            if (Session.IsAdmin) return true;
+            if (allowed) return true;
             ShowAccessDenied($"Tài khoản \"{Session.RoleDisplay}\" không có quyền {action}.");
             return false;
         }

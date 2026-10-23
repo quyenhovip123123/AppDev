@@ -28,6 +28,7 @@ namespace ST_BE.Data
                 new User { Username = "tuanpm", FullName = "Phạm Minh Tuấn", Role = Roles.Staff, PasswordHash = DefaultStaffPassword },
                 new User { Username = "landt", FullName = "Đỗ Thị Lan", Role = Roles.Staff, PasswordHash = DefaultStaffPassword },
                 new User { Username = "baohg", FullName = "Hoàng Gia Bảo", Role = Roles.Staff, PasswordHash = DefaultStaffPassword, IsActive = false },
+                new User { Username = "kiemkho", FullName = "Lê Văn Kiểm Kho", Role = Roles.Warehouse, PasswordHash = DefaultStaffPassword },
             };
 
             var existing = db.Users.Select(u => u.Username).ToHashSet();

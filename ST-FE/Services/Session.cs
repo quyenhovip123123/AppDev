@@ -13,7 +13,23 @@ namespace ST_FE.Services
 
         public static bool IsLoggedIn => AccessToken != null;
         public static bool IsAdmin => User?.Role == "Admin";
-        public static string RoleDisplay => IsAdmin ? "Quản lý" : "Nhân viên bán hàng";
+        public static bool IsStaff => User?.Role == "Staff";
+        public static bool IsWarehouse => User?.Role == "Warehouse";
+        public static string RoleDisplay => RoleText(User?.Role);
+
+        // Quyền theo màn hình (khớp với [Authorize(Roles = ...)] phía server):
+        //   Quản lý   : tất cả
+        //   Bán hàng  : Bán hàng, Hóa đơn, Khách hàng, xem Mặt hàng / Nhóm hàng
+        //   Kiểm kho  : Nhập kho, Mặt hàng (xem giá nhập, kiểm kê tồn kho, xuất Excel), xem Nhóm hàng
+        public static bool CanSell => IsAdmin || IsStaff;
+        public static bool CanManageStock => IsAdmin || IsWarehouse;
+
+        public static string RoleText(string? role) => role switch
+        {
+            "Admin" => "Quản lý",
+            "Warehouse" => "Nhân viên kiểm kho",
+            _ => "Nhân viên bán hàng"
+        };
 
         public static void Set(AuthResponse auth)
         {

@@ -138,10 +138,11 @@ namespace ST_FE.Services
             return await ReadMessageAsync(response);
         }
 
-        public static async Task PutAsync(string url, object body)
+        public static async Task<string?> PutAsync(string url, object body)
         {
             var response = await SendSafeAsync(() => Http.PutAsJsonAsync(url, body, JsonOptions));
             await EnsureSuccessAsync(response);
+            return await ReadMessageAsync(response);
         }
 
         public static async Task<string?> DeleteAsync(string url)

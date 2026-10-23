@@ -6,8 +6,13 @@ namespace ST_BE.Models
     {
         public const string Admin = "Admin";   // Quản lý cửa hàng
         public const string Staff = "Staff";   // Nhân viên bán hàng
+        public const string Warehouse = "Warehouse";   // Nhân viên kiểm kho
 
-        public static bool IsValid(string role) => role == Admin || role == Staff;
+        // Dùng trong [Authorize(Roles = ...)]: danh sách quyền cách nhau bởi dấu phẩy
+        public const string AdminOrStaff = Admin + "," + Staff;
+        public const string AdminOrWarehouse = Admin + "," + Warehouse;
+
+        public static bool IsValid(string role) => role == Admin || role == Staff || role == Warehouse;
     }
 
     // Tài khoản đăng nhập hệ thống

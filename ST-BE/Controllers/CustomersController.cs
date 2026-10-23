@@ -7,10 +7,10 @@ using ST_BE.Models;
 
 namespace ST_BE.Controllers
 {
-    // Nhân viên được xem/thêm/sửa khách hàng (phục vụ bán hàng). Xóa: chỉ Admin
+    // Nhân viên được xem/thêm/sửa khách hàng (phục vụ bán hàng). Xóa: chỉ Admin. Kiểm kho: không truy cập
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = Roles.AdminOrStaff)]
     public class CustomersController : ControllerBase
     {
         private readonly AppDbContext _db;
@@ -31,6 +31,21 @@ namespace ST_BE.Controllers
                 list = list.Where(c => c.FullName.Contains(k, StringComparison.OrdinalIgnoreCase) || c.Phone.Contains(k)).ToList();
             }
             return Ok(list.Select(ToDto));
+        }
+
+        // GET /api/customers/paged?keyword=090&page=1&pageSize=20 — phân trang phía máy chủ
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            if (!Paging.IsValid(page, pageSize)) return BadRequest(Paging.InvalidMessage);
+
+            IQueryable<Customer> query = _db.Customers.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                var k = keyword.Trim();
+                query = query.Where(c => c.FullName.Contains(k) || c.Phone.Contains(k));
+            }
+            return Ok(await query.OrderBy(c => c.CustomerId).ToPagedAsync(page, pageSize, ToDto));
         }
 
         [HttpGet("{id}")]
