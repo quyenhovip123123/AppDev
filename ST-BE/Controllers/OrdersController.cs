@@ -14,12 +14,13 @@ namespace ST_BE.Controllers
     [Authorize]
     public class OrdersController : ControllerBase
     {
-        private const decimal MoneyPerPoint = 10_000;
         private readonly AppDbContext _db;
+        private readonly AdoNetRepository _ado;
 
-        public OrdersController(AppDbContext db)
+        public OrdersController(AppDbContext db, AdoNetRepository ado)
         {
             _db = db;
+            _ado = ado;
         }
 
         // GET /api/orders?from=2026-10-01&to=2026-10-31&keyword=HD...
@@ -56,74 +57,23 @@ namespace ST_BE.Controllers
             return Ok(ToDto(order));
         }
 
-        // POST /api/orders — lập hóa đơn bán hàng: trừ tồn kho, cộng điểm khách hàng
+        // POST /api/orders — lập hóa đơn bán hàng: lưu hóa đơn, trừ tồn kho, đổi/cộng điểm trong 1 SqlTransaction (ADO.NET)
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
         {
-            // Gộp các dòng trùng mặt hàng
-            var items = request.Items.GroupBy(i => i.ProductId)
-                .Select(g => new { ProductId = g.Key, Quantity = g.Sum(x => x.Quantity) }).ToList();
-
-            var ids = items.Select(i => i.ProductId).ToList();
-            var products = await _db.Products.Where(p => ids.Contains(p.ProductId)).ToDictionaryAsync(p => p.ProductId);
-
-            Customer? customer = null;
-            if (request.CustomerId.HasValue)
+            int orderId;
+            try
             {
-                customer = await _db.Customers.FindAsync(request.CustomerId.Value);
-                if (customer == null) return BadRequest(new { message = "Khách hàng không tồn tại" });
+                orderId = await _ado.CreateOrderAsync(User.GetUserId(), request);
+            }
+            catch (BusinessException ex)
+            {
+                // Transaction đã được Rollback bên trong repository
+                return BadRequest(new { message = ex.Message });
             }
 
-            await using var tx = await _db.Database.BeginTransactionAsync();
-
-            var order = new Order
-            {
-                OrderCode = $"HD{DateTime.Now:yyMMddHHmmssfff}",
-                CreatedAt = DateTime.Now,
-                UserId = User.GetUserId(),
-                CustomerId = customer?.CustomerId,
-                Note = request.Note?.Trim(),
-                Status = OrderStatus.Completed
-            };
-
-            foreach (var item in items)
-            {
-                if (!products.TryGetValue(item.ProductId, out var product) || !product.IsActive)
-                    return BadRequest(new { message = $"Mặt hàng (ID {item.ProductId}) không tồn tại hoặc đã ngừng kinh doanh" });
-                if (product.StockQuantity < item.Quantity)
-                    return BadRequest(new { message = $"'{product.ProductName}' chỉ còn {product.StockQuantity} {product.Unit} trong kho" });
-
-                product.StockQuantity -= item.Quantity;
-                order.Details.Add(new OrderDetail
-                {
-                    ProductId = product.ProductId,
-                    ProductName = product.ProductName,
-                    UnitPrice = product.SalePrice,
-                    UnitCost = product.CostPrice,
-                    Quantity = item.Quantity,
-                    LineTotal = product.SalePrice * item.Quantity
-                });
-            }
-
-            order.SubTotal = order.Details.Sum(d => d.LineTotal);
-            if (request.Discount > order.SubTotal)
-                return BadRequest(new { message = "Số tiền giảm giá không được lớn hơn tổng tiền hàng" });
-
-            order.Discount = request.Discount;
-            order.TotalAmount = order.SubTotal - order.Discount;
-            order.CustomerPaid = request.CustomerPaid;
-            if (order.CustomerPaid < order.TotalAmount)
-                return BadRequest(new { message = $"Khách đưa chưa đủ tiền (cần {order.TotalAmount:N0}đ)" });
-
-            if (customer != null)
-                customer.Points += (int)(order.TotalAmount / MoneyPerPoint);
-
-            _db.Orders.Add(order);
-            await _db.SaveChangesAsync();
-            await tx.CommitAsync();
-
-            var created = await Query().FirstAsync(o => o.OrderId == order.OrderId);
-            return CreatedAtAction(nameof(GetById), new { id = order.OrderId }, ToDto(created));
+            var created = await Query().FirstAsync(o => o.OrderId == orderId);
+            return CreatedAtAction(nameof(GetById), new { id = orderId }, ToDto(created));
         }
 
         // POST /api/orders/5/cancel — hủy hóa đơn: hoàn tồn kho, trừ lại điểm (chỉ Admin)
@@ -140,8 +90,12 @@ namespace ST_BE.Controllers
             foreach (var d in order.Details)
                 d.Product!.StockQuantity += d.Quantity;
 
+            // Trừ lại điểm đã cộng, hoàn lại điểm khách đã dùng
             if (order.Customer != null)
-                order.Customer.Points = Math.Max(0, order.Customer.Points - (int)(order.TotalAmount / MoneyPerPoint));
+            {
+                var earned = (int)(order.TotalAmount / AdoNetRepository.MoneyPerPoint);
+                order.Customer.Points = Math.Max(0, order.Customer.Points - earned + order.PointsUsed);
+            }
 
             order.Status = OrderStatus.Cancelled;
             await _db.SaveChangesAsync();
@@ -164,6 +118,8 @@ namespace ST_BE.Controllers
             CustomerName = o.Customer?.FullName ?? "Khách lẻ",
             SubTotal = o.SubTotal,
             Discount = o.Discount,
+            PointsUsed = o.PointsUsed,
+            PointsDiscount = o.PointsDiscount,
             TotalAmount = o.TotalAmount,
             CustomerPaid = o.CustomerPaid,
             ChangeAmount = o.CustomerPaid - o.TotalAmount,

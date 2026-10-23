@@ -47,7 +47,7 @@ namespace ST_BE.Controllers
             };
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
-            return Ok(ToDto(user));
+            return Created($"/api/users/{user.UserId}", ToDto(user));   // 201 như các API tạo mới khác
         }
 
         [HttpPut("{id}")]

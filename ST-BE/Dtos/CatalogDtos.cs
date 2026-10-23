@@ -23,6 +23,7 @@ namespace ST_BE.Dtos
     {
         public int ProductId { get; set; }
         public string ProductCode { get; set; } = string.Empty;
+        public string? Barcode { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
@@ -39,6 +40,10 @@ namespace ST_BE.Dtos
         [Required(ErrorMessage = "Mã hàng không được trống"), StringLength(30)]
         public string ProductCode { get; set; } = string.Empty;
 
+        // Để trống nếu hàng chưa có mã vạch
+        [RegularExpression(@"^\s*(\d{8,14})?\s*$", ErrorMessage = "Mã vạch chỉ gồm 8 – 14 chữ số")]
+        public string? Barcode { get; set; }
+
         [Required(ErrorMessage = "Tên hàng không được trống"), StringLength(150)]
         public string ProductName { get; set; } = string.Empty;
 
@@ -51,7 +56,9 @@ namespace ST_BE.Dtos
         [Range(0, 1_000_000_000, ErrorMessage = "Giá nhập không hợp lệ")]
         public decimal CostPrice { get; set; }
 
-        [Range(0, 1_000_000_000, ErrorMessage = "Giá bán không hợp lệ")]
+        // Đọc "0.01" theo InvariantCulture: máy đặt định dạng Việt Nam (dấu phẩy thập phân) vẫn không lỗi
+        [Range(typeof(decimal), "0.01", "1000000000", ErrorMessage = "Giá bán phải lớn hơn 0",
+            ParseLimitsInInvariantCulture = true, ConvertValueInInvariantCulture = true)]
         public decimal SalePrice { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "Tồn kho không hợp lệ")]

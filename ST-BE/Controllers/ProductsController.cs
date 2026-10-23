@@ -13,32 +13,79 @@ namespace ST_BE.Controllers
     [Authorize]
     public class ProductsController : ControllerBase
     {
+        private const int MaxPageSize = 100;
         private readonly AppDbContext _db;
+        private readonly AdoNetRepository _ado;
 
-        public ProductsController(AppDbContext db)
+        public ProductsController(AppDbContext db, AdoNetRepository ado)
         {
             _db = db;
+            _ado = ado;
         }
 
-        // GET /api/products?keyword=bút&categoryId=1&includeInactive=false
+        // GET /api/products?keyword=bút&categoryId=1&includeInactive=false — toàn bộ danh sách (màn hình bán hàng dùng)
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] string? keyword, [FromQuery] int? categoryId, [FromQuery] bool includeInactive = false)
         {
             var query = Query();
             if (!includeInactive) query = query.Where(p => p.IsActive);
             if (categoryId > 0) query = query.Where(p => p.CategoryId == categoryId);
-
-            var list = await query.ToListAsync();
-
-            // Lọc từ khóa trên bộ nhớ để so khớp tiếng Việt có dấu không phân biệt hoa/thường
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 var k = keyword.Trim();
-                list = list.Where(p => p.ProductName.Contains(k, StringComparison.OrdinalIgnoreCase)
-                                    || p.ProductCode.Contains(k, StringComparison.OrdinalIgnoreCase)).ToList();
+                query = query.Where(p => p.ProductName.Contains(k) || p.ProductCode.Contains(k) || p.Barcode == k);
             }
+
+            var list = await query.ToListAsync();
             list.ForEach(HideCostForStaff);
             return Ok(list);
+        }
+
+        // GET /api/products/paged?keyword=bút&categoryId=1&page=1&pageSize=20 — phân trang phía máy chủ
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] string? keyword, [FromQuery] int? categoryId,
+            [FromQuery] bool includeInactive = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            if (page < 1 || pageSize < 1 || pageSize > MaxPageSize)
+                return BadRequest(new { message = $"page phải >= 1 và pageSize trong khoảng 1-{MaxPageSize}" });
+
+            // Include: nạp kèm nhóm hàng để lấy CategoryName (không bị null)
+            // AsNoTracking: truy vấn chỉ đọc, EF không cần theo dõi thay đổi -> nhẹ RAM
+            IQueryable<Product> query = _db.Products.AsNoTracking().Include(p => p.Category);
+
+            if (!includeInactive) query = query.Where(p => p.IsActive);
+            if (categoryId > 0) query = query.Where(p => p.CategoryId == categoryId);
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                var k = keyword.Trim();
+                // .Contains() được dịch thành LIKE N'%...%' trên SQL Server (collation không phân biệt hoa/thường)
+                query = query.Where(p => p.ProductName.Contains(k) || p.ProductCode.Contains(k) || p.Barcode == k);
+            }
+
+            var total = await query.CountAsync();
+            var products = await query.OrderBy(p => p.ProductCode)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var items = products.Select(p => new ProductDto
+            {
+                ProductId = p.ProductId,
+                ProductCode = p.ProductCode,
+                Barcode = p.Barcode,
+                ProductName = p.ProductName,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category?.CategoryName ?? string.Empty,
+                Unit = p.Unit,
+                CostPrice = p.CostPrice,
+                SalePrice = p.SalePrice,
+                StockQuantity = p.StockQuantity,
+                Description = p.Description,
+                IsActive = p.IsActive
+            }).ToList();
+            items.ForEach(HideCostForStaff);
+
+            return Ok(new PagedResult<ProductDto> { Items = items, Page = page, PageSize = pageSize, TotalCount = total });
         }
 
         [HttpGet("{id}")]
@@ -50,11 +97,13 @@ namespace ST_BE.Controllers
             return Ok(p);
         }
 
-        // GET /api/products/by-code/BUT001 — dùng khi bán hàng quét/nhập mã
+        // GET /api/products/by-barcode/8938686000019 hoặc /api/products/by-code/BUT001 — quầy bán hàng quét mã.
+        // Khớp theo mã vạch EAN hoặc mã hàng nội bộ. Tra cứu bằng ADO.NET (SqlDataReader) cho nhanh
         [HttpGet("by-code/{code}")]
+        [HttpGet("by-barcode/{code}")]
         public async Task<IActionResult> GetByCode(string code)
         {
-            var p = await Query().FirstOrDefaultAsync(x => x.ProductCode == code.Trim().ToUpper() && x.IsActive);
+            var p = await _ado.GetProductByCodeAsync(code);
             if (p == null) return NotFound(new { message = $"Không tìm thấy mặt hàng có mã {code}" });
             HideCostForStaff(p);
             return Ok(p);
@@ -67,6 +116,9 @@ namespace ST_BE.Controllers
             var code = request.ProductCode.Trim().ToUpper();
             if (await _db.Products.AnyAsync(p => p.ProductCode == code))
                 return Conflict(new { message = "Mã hàng đã tồn tại" });
+            var barcode = NormalizeBarcode(request.Barcode);
+            if (barcode != null && await _db.Products.AnyAsync(p => p.Barcode == barcode))
+                return Conflict(new { message = "Mã vạch đã được gán cho mặt hàng khác" });
             if (!await _db.Categories.AnyAsync(c => c.CategoryId == request.CategoryId))
                 return BadRequest(new { message = "Nhóm hàng không tồn tại" });
 
@@ -88,6 +140,9 @@ namespace ST_BE.Controllers
             var code = request.ProductCode.Trim().ToUpper();
             if (await _db.Products.AnyAsync(p => p.ProductCode == code && p.ProductId != id))
                 return Conflict(new { message = "Mã hàng đã tồn tại" });
+            var barcode = NormalizeBarcode(request.Barcode);
+            if (barcode != null && await _db.Products.AnyAsync(p => p.Barcode == barcode && p.ProductId != id))
+                return Conflict(new { message = "Mã vạch đã được gán cho mặt hàng khác" });
             if (!await _db.Categories.AnyAsync(c => c.CategoryId == request.CategoryId))
                 return BadRequest(new { message = "Nhóm hàng không tồn tại" });
 
@@ -124,9 +179,14 @@ namespace ST_BE.Controllers
             if (!User.IsAdmin()) p.CostPrice = 0;
         }
 
+        // Chuỗi rỗng -> null để chỉ mục UNIQUE (lọc IS NOT NULL) cho phép nhiều mặt hàng chưa có mã vạch
+        private static string? NormalizeBarcode(string? barcode) =>
+            string.IsNullOrWhiteSpace(barcode) ? null : barcode.Trim();
+
         private static void Apply(Product p, ProductRequest r)
         {
             p.ProductCode = r.ProductCode.Trim().ToUpper();
+            p.Barcode = NormalizeBarcode(r.Barcode);
             p.ProductName = r.ProductName.Trim();
             p.CategoryId = r.CategoryId;
             p.Unit = r.Unit.Trim();
@@ -142,6 +202,7 @@ namespace ST_BE.Controllers
             {
                 ProductId = p.ProductId,
                 ProductCode = p.ProductCode,
+                Barcode = p.Barcode,
                 ProductName = p.ProductName,
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category!.CategoryName,

@@ -56,11 +56,21 @@ namespace ST_BE.Data
             {
                 e.HasIndex(p => p.ProductCode).IsUnique();
                 e.Property(p => p.ProductCode).HasMaxLength(30).IsRequired();
+                // Mã vạch không bắt buộc nhưng đã có thì không được trùng (bỏ qua các dòng NULL)
+                e.HasIndex(p => p.Barcode).IsUnique().HasFilter("[Barcode] IS NOT NULL");
+                e.Property(p => p.Barcode).HasMaxLength(20);
                 e.Property(p => p.ProductName).HasMaxLength(150).IsRequired();
                 e.Property(p => p.Unit).HasMaxLength(20);
                 e.Property(p => p.Description).HasMaxLength(255);
                 e.HasOne(p => p.Category).WithMany(c => c.Products)
                     .HasForeignKey(p => p.CategoryId).OnDelete(DeleteBehavior.Restrict);
+                // Ràng buộc kiểm tra ngay trong CSDL: giá bán > 0, tồn kho không âm
+                e.ToTable(t =>
+                {
+                    t.HasCheckConstraint("CK_Products_SalePrice", "[SalePrice] > 0");
+                    t.HasCheckConstraint("CK_Products_CostPrice", "[CostPrice] >= 0");
+                    t.HasCheckConstraint("CK_Products_StockQuantity", "[StockQuantity] >= 0");
+                });
             });
 
             mb.Entity<Customer>(e =>
@@ -70,6 +80,7 @@ namespace ST_BE.Data
                 e.Property(c => c.Phone).HasMaxLength(15).IsRequired();
                 e.Property(c => c.Email).HasMaxLength(100);
                 e.Property(c => c.Address).HasMaxLength(255);
+                e.ToTable(t => t.HasCheckConstraint("CK_Customers_Points", "[Points] >= 0"));
             });
 
             mb.Entity<Order>(e =>
@@ -80,11 +91,13 @@ namespace ST_BE.Data
                 e.Property(o => o.Note).HasMaxLength(255);
                 e.HasOne(o => o.User).WithMany().HasForeignKey(o => o.UserId).OnDelete(DeleteBehavior.Restrict);
                 e.HasOne(o => o.Customer).WithMany().HasForeignKey(o => o.CustomerId).OnDelete(DeleteBehavior.Restrict);
+                e.HasIndex(o => o.CreatedAt);
             });
 
             mb.Entity<OrderDetail>(e =>
             {
                 e.Property(d => d.ProductName).HasMaxLength(150);
+                e.ToTable(t => t.HasCheckConstraint("CK_OrderDetails_Quantity", "[Quantity] > 0"));
                 e.HasOne(d => d.Order).WithMany(o => o.Details).HasForeignKey(d => d.OrderId).OnDelete(DeleteBehavior.Cascade);
                 e.HasOne(d => d.Product).WithMany().HasForeignKey(d => d.ProductId).OnDelete(DeleteBehavior.Restrict);
             });

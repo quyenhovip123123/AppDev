@@ -5,8 +5,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ST_BE.Data;
 using ST_BE.Services;
+using System.Globalization;
 using System.Security.Claims;
 using System.Text;
+
+// Thông báo lỗi luôn định dạng số kiểu Việt Nam (VD: 50.000đ) dù máy chủ cài ngôn ngữ nào
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("vi-VN");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,13 +22,20 @@ if (Encoding.UTF8.GetByteCount(jwt.Secret) < 32)
 builder.Services.Configure<JwtSettings>(jwtSection);
 builder.Services.AddScoped<TokenService>();
 
-// ===== 2. Cơ sở dữ liệu (SQLite mặc định, đổi "DatabaseProvider" = "SqlServer" để dùng SQL Server) =====
-builder.Services.AddDbContext<AppDbContext>(options =>
+// ===== 2. Cơ sở dữ liệu SQL Server — chuỗi kết nối đọc từ appsettings.json, không viết cứng trong code =====
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Thiếu ConnectionStrings:DefaultConnection trong appsettings.json");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddScoped<AdoNetRepository>();   // Truy vấn ADO.NET thuần: mã vạch, thanh toán (SqlTransaction), Stored Procedure
+
+// ===== CORS: cho phép client (WinForms / Swagger / web) gọi API =====
+builder.Services.AddCors(options =>
 {
-    if (builder.Configuration["DatabaseProvider"] == "SqlServer")
-        options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
-    else
-        options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
+    options.AddPolicy("AllowClient", policy => policy
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .WithExposedHeaders("Token-Expired"));
 });
 
 // ===== 3. Xác thực bằng JWT Bearer =====
@@ -112,11 +123,12 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Tạo CSDL + dữ liệu mẫu khi chạy lần đầu
+// Áp dụng các EF Core Migration còn thiếu (tạo CSDL, bảng, Stored Procedure) rồi nạp dữ liệu mẫu.
+// Tương đương chạy "Update-Database" / "dotnet ef database update".
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    db.Database.Migrate();
     DbSeeder.Seed(db);
 }
 
@@ -135,8 +147,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Môi trường dev dùng được cả HTTP (http://localhost:5124) để test API / chạy client mà không cần tin cậy chứng chỉ
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
 
+app.UseCors("AllowClient");
 app.UseAuthentication();
 app.UseAuthorization();
 

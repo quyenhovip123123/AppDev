@@ -20,6 +20,10 @@ namespace ST_BE.Dtos
         [Range(0, 10_000_000_000, ErrorMessage = "Tiền khách đưa không hợp lệ")]
         public decimal CustomerPaid { get; set; }
 
+        // Số điểm khách muốn dùng để trừ tiền (1 điểm = 1.000đ)
+        [Range(0, 1_000_000, ErrorMessage = "Số điểm dùng không hợp lệ")]
+        public int RedeemPoints { get; set; }
+
         [StringLength(255)]
         public string? Note { get; set; }
 
@@ -47,6 +51,8 @@ namespace ST_BE.Dtos
         public string CustomerName { get; set; } = string.Empty;
         public decimal SubTotal { get; set; }
         public decimal Discount { get; set; }
+        public int PointsUsed { get; set; }
+        public decimal PointsDiscount { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal CustomerPaid { get; set; }
         public decimal ChangeAmount { get; set; }
@@ -128,5 +134,36 @@ namespace ST_BE.Dtos
         public List<DailyRevenueDto> DailyRevenue { get; set; } = new();
         public List<TopProductDto> TopProducts { get; set; } = new();
         public List<ProductDto> LowStockProducts { get; set; } = new();
+    }
+
+    // GET /api/reports/dashboard-summary — 4 thẻ KPI
+    public class DashboardSummaryDto
+    {
+        public decimal TodayRevenue { get; set; }
+        public int TodayOrderCount { get; set; }
+        public int NewCustomerCount { get; set; }      // Khách đăng ký trong tháng này
+        public int LowStockCount { get; set; }
+    }
+
+    // Kết quả Stored Procedure sp_RevenueByShift
+    public class ShiftRevenueDto
+    {
+        public int UserId { get; set; }
+        public string StaffName { get; set; } = string.Empty;
+        public int OrderCount { get; set; }
+        public decimal Revenue { get; set; }
+        public decimal TotalDiscount { get; set; }
+        public DateTime FirstOrderAt { get; set; }
+        public DateTime LastOrderAt { get; set; }
+    }
+
+    // Kết quả phân trang phía máy chủ
+    public class PagedResult<T>
+    {
+        public List<T> Items { get; set; } = new();
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalCount { get; set; }
+        public int TotalPages => PageSize == 0 ? 0 : (int)Math.Ceiling(TotalCount / (double)PageSize);
     }
 }

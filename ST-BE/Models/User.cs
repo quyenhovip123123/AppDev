@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ST_BE.Models
 {
     public static class Roles
@@ -13,12 +15,16 @@ namespace ST_BE.Models
     {
         public int UserId { get; set; }
 
+        [Required, StringLength(50)]
         public string Username { get; set; } = string.Empty;       // Lưu chữ thường
 
+        [Required]
         public string PasswordHash { get; set; } = string.Empty;   // BCrypt hash, KHÔNG lưu mật khẩu gốc
 
+        [Required, StringLength(100)]
         public string FullName { get; set; } = string.Empty;
 
+        [Required, StringLength(20)]
         public string Role { get; set; } = Roles.Staff;
 
         public bool IsActive { get; set; } = true;
