@@ -120,6 +120,7 @@ dotnet --list-runtimes   # runtime dùng để chạy (ST-BE cần Microsoft.Asp
   # Linux / macOS / Git Bash
   DOTNET_ROLL_FORWARD=Major dotnet run
   ```
+  > Lưu ý: trên Linux/macOS chỉ áp dụng được cho ST-BE; ST-FE là WinForms nên chỉ chạy trên Windows (xem mục *Chạy ST-FE trên Linux/macOS* bên dưới).
   ```powershell
   # PowerShell
   $env:DOTNET_ROLL_FORWARD = "Major"; dotnet run
@@ -131,6 +132,29 @@ dotnet --list-runtimes   # runtime dùng để chạy (ST-BE cần Microsoft.Asp
   Muốn áp dụng luôn (kể cả khi bấm F5 trong Visual Studio), thêm `<RollForward>Major</RollForward>` vào `<PropertyGroup>` trong `ST-BE.csproj` / `ST-FE.csproj`.
 - **Chỉ có SDK cũ hơn 8 (VD .NET 6, 7):** không build được `net8.0`. Cần cài [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0), hoặc chỉ cài runtime: *ASP.NET Core Runtime 8* (cho ST-BE) và *.NET Desktop Runtime 8* (cho ST-FE).
 - **Muốn chuyển hẳn lên .NET 9:** đổi `<TargetFramework>` thành `net9.0` (ST-FE: `net9.0-windows`) và nâng các gói `Microsoft.EntityFrameworkCore.*`, `Microsoft.AspNetCore.Authentication.JwtBearer` lên bản 9.x tương ứng.
+
+### Chạy ST-FE trên Linux/macOS (qua Wine hoặc máy ảo Windows)
+ST-FE là WinForms nên không chạy trực tiếp bằng `dotnet run` trên Linux/macOS. Cách làm: build ra file `.exe` kèm sẵn .NET runtime (không cần cài .NET trong Wine/máy ảo), rồi chạy file đó. Lệnh publish chạy được ngay trên Linux:
+```bash
+cd ST-FE
+dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true
+# Kết quả: bin/Release/net8.0-windows/win-x64/publish/ (ST-FE.exe ~155 MB + vài file .dll đi kèm)
+```
+- **Wine:** chạy ST-BE bình thường trên Linux (`cd ST-BE && dotnet run`), rồi:
+  ```bash
+  wine ST-FE/bin/Release/net8.0-windows/win-x64/publish/ST-FE.exe
+  ```
+  App trong Wine gọi được `http://localhost:5124` của ST-BE như trên Windows.
+- **Máy ảo Windows:** chép **cả thư mục** `publish/` vào máy ảo (không chỉ file `.exe`). Trong máy ảo, `localhost` là chính máy ảo, nên phải trỏ ST-FE về IP của máy thật bằng biến môi trường `SUNNY_API_URL`, và cho ST-BE lắng nghe trên mọi địa chỉ:
+  ```bash
+  # Trên máy thật (Linux)
+  cd ST-BE && dotnet run --urls "http://0.0.0.0:5124"
+  ```
+  ```powershell
+  # Trong máy ảo (PowerShell), thay 192.168.x.x bằng IP máy thật
+  $env:SUNNY_API_URL = "http://192.168.x.x:5124/api/"; .\ST-FE.exe
+  ```
+- Cách này cũng dùng được khi gửi app cho máy Windows không cài .NET 8.
 
 ### Tài khoản mẫu
 | Tên đăng nhập | Mật khẩu | Quyền |
