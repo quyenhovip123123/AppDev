@@ -33,7 +33,6 @@ namespace ST_FE.Forms
             chkShowPassword = new CheckBox();
             btnLogin = new Button();
             btnExit = new Button();
-            lblHint = new Label();
             pnlHeader.SuspendLayout();
             SuspendLayout();
             // 
@@ -138,24 +137,13 @@ namespace ST_FE.Forms
             btnExit.UseVisualStyleBackColor = true;
             btnExit.Click += btnExit_Click;
             // 
-            // lblHint
-            // 
-            lblHint.ForeColor = Color.Gray;
-            lblHint.Location = new Point(12, 400);
-            lblHint.Name = "lblHint";
-            lblHint.Size = new Size(396, 40);
-            lblHint.TabIndex = 8;
-            lblHint.Text = "Tài khoản mẫu: admin / admin123  •  nhanvien / nhanvien123";
-            lblHint.TextAlign = ContentAlignment.MiddleCenter;
-            // 
             // FormLogin
             // 
             AcceptButton = btnLogin;
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(420, 450);
-            Controls.Add(lblHint);
+            ClientSize = new Size(420, 410);
             Controls.Add(btnExit);
             Controls.Add(btnLogin);
             Controls.Add(chkShowPassword);
@@ -187,6 +175,5 @@ namespace ST_FE.Forms
         private CheckBox chkShowPassword;
         private Button btnLogin;
         private Button btnExit;
-        private Label lblHint;
     }
 }
